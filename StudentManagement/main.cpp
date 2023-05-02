@@ -5,10 +5,14 @@
 
 using namespace std;
 
+//global variables
+list<Student> shown_students;//正在显示的学生列表
+User now_user;//当前登录的用户
+
 class User
 {
 private:
-	string account;
+	string account;//唯一标识
 	string password;
 	short role;//学生0，老师1
 public:
@@ -24,9 +28,24 @@ public:
 	void setRole(short role) { this->role = role; }
 	//methods
 	bool login();
-	bool signUp();
-	bool save(list<User> users);
-	list<User> load();
+	//和User相关的
+	bool saveOneUser(User user);//增加一个用户，需要检验account的唯一性
+	bool deleteOneUser(string account);//删除一个用户
+	bool showOneUser(string account);//查看一个用户信息
+	bool showAllUser();//查看所有用户信息
+	bool updateOneUser(User user);//修改用户信息
+	list<User> loadUser();//加载所有用户
+	//和Student相关的
+	// 公共权限
+	bool updateOneStudent(Student student);//学生只能修改自己的电话和生日，老师可以任意修改
+	//学生的权限
+	bool showOneStudent(string id);//学生只能查看自己的学生信息
+	//老师的权限
+	bool showAllStudent();//老师可以查看所有学生信息
+	bool saveOneStudent(Student student);//老师可以增加一个学生
+	bool deleteOneStudent(string id);//老师可以删除一个学生
+	list<Student> loadStudent();//加载所有学生
+	bool signUp();//只有拥有管理员账号和密码的老师可以注册新老师
 };
 
 class Student
@@ -42,7 +61,20 @@ private:
 public:
 	//construtors
 	Student() {};
-	Student(string id, string name, string sex, string birthday, short age) :id(id), name(name), sex(sex), birthday(birthday), age(age) {};
+	inline Student(string id, string name, string identityId, string sex, string birthday)
+		:id(id), name(name), identityId(identityId), sex(sex), birthday(birthday) {
+		int birthYear = atoi(birthday.substr(0, 4).c_str());
+		int birthMonth = atoi(birthday.substr(4, 2).c_str());
+		time_t now;
+		time(&now);
+		tm* nowTime = localtime(&now);
+		int nowYear = 1990 + nowTime->tm_year;
+		int nowMonth = 1 + nowTime->tm_mon;
+		age = nowYear - birthYear;
+		if (nowMonth < birthMonth) {
+			age--;
+		}
+	};
 	//getters and setters
 	string getId() { return id; }
 	string getName() { return name; }
@@ -57,6 +89,4 @@ public:
 	void setBirthday(string birthday) { this->birthday = birthday; }
 	void setAge(short age) { this->age = age; }
 	//methods
-	bool show(string id);//只能查看自己的学生信息
-	bool update(string id);//只能修改自己的部分学生信息，包括电话和生日
 };
