@@ -7,14 +7,6 @@
 
 using namespace std;
 
-//forward declaration
-class User;
-class Student;
-
-//global variables
-list<Student> shown_students;//正在显示的学生列表
-User now_user();//当前登录的用户
-
 class User
 {
 private:
@@ -110,6 +102,9 @@ public:
 	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
 };
 
+//global variables
+list<Student> shown_students;//正在显示的学生列表
+User now_user;//当前登录的用户
 
 int main() {
 	Student student("202100810120", "于靖怿", "510105200203280019", "男", "2002-03");
