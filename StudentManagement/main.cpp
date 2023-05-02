@@ -7,12 +7,16 @@
 
 using namespace std;
 
+//forward declarations
+class Student;
+class User;
+
 class User
 {
 private:
 	string account;//唯一标识
 	string password;
-	short role;//学生0，老师1,管理员3
+	short role;//学生0，老师1
 public:
 	//constructors
 	User() {};
@@ -66,7 +70,7 @@ public:
 		:id(id), name(name), identityId(identityId), sex(sex), birthday(birthday) {
 		//计算年龄并赋值
 		int birthYear = atoi(birthday.substr(0, 4).c_str());
-		int birthMonth = atoi(birthday.substr(4, 2).c_str());
+		int birthMonth = atoi(birthday.substr(5, 2).c_str());
 		time_t now;
 		time(&now);
 		tm* nowTime = localtime(&now);
@@ -107,7 +111,7 @@ list<Student> shown_students;//正在显示的学生列表
 User now_user;//当前登录的用户
 
 int main() {
-	Student student("202100810120", "于靖怿", "510105200203280019", "男", "2002-03");
+	Student student("202100810120", "于靖怿", "510105200203280019", "男", "2002-06");
 	cout << student.getAge();
 	return 0;
 }
