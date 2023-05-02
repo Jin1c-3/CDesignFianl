@@ -1,3 +1,5 @@
+#define _CRT_SECURE_NO_WARNINGS 1
+
 #include<iostream>
 #include<string>
 #include<list>
@@ -5,9 +7,13 @@
 
 using namespace std;
 
+//forward declaration
+class User;
+class Student;
+
 //global variables
 list<Student> shown_students;//正在显示的学生列表
-User now_user;//当前登录的用户
+User now_user();//当前登录的用户
 
 class User
 {
@@ -18,7 +24,10 @@ private:
 public:
 	//constructors
 	User() {};
-	User(string account, string password, short role) :account(account), password(password), role(role) {};
+	User(string account, string password, short role)
+		:account(account), password(password), role(role) {};
+	User(User& user)
+		:account(user.account), password(user.password), role(user.role) {};
 	//getters and setters
 	string getAccount() { return account; }
 	string getPassword() { return password; }
@@ -69,13 +78,15 @@ public:
 		time_t now;
 		time(&now);
 		tm* nowTime = localtime(&now);
-		int nowYear = 1990 + nowTime->tm_year;
+		int nowYear = 1900 + nowTime->tm_year;
 		int nowMonth = 1 + nowTime->tm_mon;
 		age = nowYear - birthYear;
 		if (nowMonth < birthMonth) {
 			age--;
 		}
 	};
+	Student(Student& student)
+		:id(student.id), name(student.name), identityId(student.identityId), sex(student.sex), phone(student.phone), birthday(student.birthday), age(student.age) {};
 	//getters and setters
 	string getId() { return id; }
 	string getName() { return name; }
@@ -98,3 +109,10 @@ public:
 	static bool saveAllUser(list<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
 	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
 };
+
+
+int main() {
+	Student student("202100810120", "于靖怿", "510105200203280019", "男", "2002-03");
+	cout << student.getAge();
+	return 0;
+}
