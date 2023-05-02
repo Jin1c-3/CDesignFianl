@@ -63,6 +63,7 @@ public:
 	Student() {};
 	inline Student(string id, string name, string identityId, string sex, string birthday)
 		:id(id), name(name), identityId(identityId), sex(sex), birthday(birthday) {
+		//计算年龄并赋值
 		int birthYear = atoi(birthday.substr(0, 4).c_str());
 		int birthMonth = atoi(birthday.substr(4, 2).c_str());
 		time_t now;
@@ -89,4 +90,13 @@ public:
 	void setBirthday(string birthday) { this->birthday = birthday; }
 	void setAge(short age) { this->age = age; }
 	//methods
+};
+
+class FileUtil
+{
+public:
+	static bool saveOneUser(User user);//保存一个用户，采用直接在文件末尾添加的方式实现
+	static bool saveAllUser(list<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
+	static bool saveOneStudent(Student student);//保存一个学生，采用直接在文件末尾添加的方式实现
+	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
 };
