@@ -129,6 +129,29 @@
   <ItemGroup>
     <ClCompile Include="main.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tabulate\asciidoc_exporter.hpp" />
+    <ClInclude Include="tabulate\cell.hpp" />
+    <ClInclude Include="tabulate\color.hpp" />
+    <ClInclude Include="tabulate\column.hpp" />
+    <ClInclude Include="tabulate\column_format.hpp" />
+    <ClInclude Include="tabulate\exporter.hpp" />
+    <ClInclude Include="tabulate\font_align.hpp" />
+    <ClInclude Include="tabulate\font_style.hpp" />
+    <ClInclude Include="tabulate\format.hpp" />
+    <ClInclude Include="tabulate\latex_exporter.hpp" />
+    <ClInclude Include="tabulate\markdown_exporter.hpp" />
+    <ClInclude Include="tabulate\optional_lite.hpp" />
+    <ClInclude Include="tabulate\printer.hpp" />
+    <ClInclude Include="tabulate\row.hpp" />
+    <ClInclude Include="tabulate\string_view_lite.hpp" />
+    <ClInclude Include="tabulate\table.hpp" />
+    <ClInclude Include="tabulate\table_internal.hpp" />
+    <ClInclude Include="tabulate\tabulate.hpp" />
+    <ClInclude Include="tabulate\termcolor.hpp" />
+    <ClInclude Include="tabulate\utf8.hpp" />
+    <ClInclude Include="tabulate\variant_lite.hpp" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

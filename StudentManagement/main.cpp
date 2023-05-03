@@ -4,7 +4,9 @@
 #include<string>
 #include<list>
 #include<ctime>
+#include "tabulate/table.hpp"
 
+using namespace tabulate;
 using namespace std;
 
 //forward declarations
@@ -32,7 +34,7 @@ public:
 	void setPassword(string password) { this->password = password; }
 	void setRole(short role) { this->role = role; }
 	//methods
-	bool login();
+	bool login(User user);
 	//和User相关的
 	bool addOneUser(User user);//增加一个用户，需要检验account的唯一性
 	bool deleteOneUser(string account);//删除一个用户
@@ -50,7 +52,7 @@ public:
 	bool addOneStudent(Student student);//老师可以增加一个学生
 	bool deleteOneStudent(string id);//老师可以删除一个学生
 	list<Student> loadStudent();//加载所有学生
-	bool signUp();//只有拥有管理员账号和密码的老师可以注册新老师
+	bool signUp(User user);//只有拥有管理员账号和密码的老师可以注册新老师
 };
 
 class Student
@@ -104,6 +106,14 @@ class FileUtil
 public:
 	static bool saveAllUser(list<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
 	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
+	static list<User> loadAllUser();//loadUser()的实现
+	static list<Student> loadAllStudent();//loadStudent()的实现
+};
+
+class Panel
+{
+public:
+	void login();//登录面板
 };
 
 //global variables
@@ -112,6 +122,24 @@ User now_user;//当前登录的用户
 
 int main() {
 	Student student("202100810120", "于靖怿", "510105200203280019", "男", "2002-06");
-	cout << student.getAge();
+	cout << student.getAge() << endl;
+
+	Table hellogithub; // 创建一个叫做 hellogithub 的 Table 对象
+
+	hellogithub.add_row({ "HelloGitHub","HelloMotherfucker~" });
+	hellogithub.add_row({ "hellogithub.com" });
+	hellogithub[1][0].format()
+		.font_style({ FontStyle::underline });
+	hellogithub.add_row({ "github.com/521xueweihan/HelloGitHub" });
+	hellogithub[2][0].format()
+		.font_style({ FontStyle::underline })
+		.font_background_color(Color::red)
+		.font_style({ FontStyle::bold });
+	hellogithub.add_row({ "xueweihan NB!!!" });
+
+	cout << hellogithub << endl;
+
+	system("pause");
+
 	return 0;
 }

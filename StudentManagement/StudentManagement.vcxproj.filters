@@ -19,4 +19,69 @@
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="tabulate\asciidoc_exporter.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\cell.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\color.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\column.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\column_format.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\exporter.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\font_align.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\font_style.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\format.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\latex_exporter.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\markdown_exporter.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\optional_lite.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\printer.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\row.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\string_view_lite.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\table.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\table_internal.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\tabulate.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\termcolor.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\utf8.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="tabulate\variant_lite.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
