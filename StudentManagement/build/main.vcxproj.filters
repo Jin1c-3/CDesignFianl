@@ -13,4 +13,7 @@
       <UniqueIdentifier>{32EED4D5-20E8-3CA7-9F25-82ADCC1CBCCC}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\student.txt" />
+  </ItemGroup>
 </Project>
