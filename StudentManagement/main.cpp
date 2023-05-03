@@ -89,9 +89,19 @@ public:
 	Student(const Student& student)//这里得是常引用，不然会报错
 		:id(student.id), name(student.name), identityId(student.identityId), sex(student.sex), phone(student.phone), birthday(student.birthday), age(student.age) {};
 	//getters and setters
-	string toString()
+	inline string toString()
 	{
-		return id + "," + name + "," + sex + "," + phone + "," + birthday + "," + to_string(age);
+		return id + "," + name + "," + identityId + "," + sex + "," + phone + "," + birthday + "," + to_string(age);
+	}
+	inline vector<string> toVectorString() {
+		vector <string> v;
+		v.push_back(id);
+		v.push_back(name);
+		v.push_back(identityId);
+		v.push_back(sex);
+		v.push_back(phone);
+		v.push_back(birthday);
+		v.push_back(to_string(age));
 	}
 	string getId() { return id; }
 	string getName() { return name; }
@@ -121,7 +131,14 @@ public:
 class Panel
 {
 public:
+	void loading();//通用加载页面
+	void menu();//主界面
 	void login();//登陆的可视化界面
+	void signUp();//注册教师的可视化界面
+	void error();//通用错误页面
+	void studentOperation(list<Student> students);//显示学生信息，同时包括更新、删除、增加的功能
+	void studentOperation(Student student);//显示单个学生信息，同时包括更新电话的功能
+	void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
 };
 
 //global variables
@@ -168,29 +185,17 @@ bool FileUtil::saveAllStudent(list<Student> students) {
 }
 
 int main() {
-	Student yujingyi("202100810120", "于静怡", "123456789012345678", "女", "12345678901", "2000-01-01");
+	Student yujingyi("202100810120", "于静怡", "123456789012345678", "女", "12345678901", "2000-01");
 	cout << yujingyi.toString() << endl;
 
-	Table hellogithub; // 创建一个叫做 hellogithub 的 Table 对象
-
-	hellogithub.add_row({ "HelloGitHub","HelloMotherfucker~" });
-	hellogithub.add_row({ "hellogithub.com" });
-	hellogithub[1][0].format()
-		.font_style({ FontStyle::underline });
-	hellogithub.add_row({ "github.com/521xueweihan/HelloGitHub" });
-	hellogithub[2][0].format()
-		.font_style({ FontStyle::underline })
-		.font_background_color(Color::red)
-		.font_style({ FontStyle::bold });
-	hellogithub.add_row({ "xueweihan NB!!!" });
-
-	cout << hellogithub << endl;
+	Table studentTableTest; // 创建一个叫做 hellogithub 的 Table 对象
+	studentTableTest.add_row({ "学号","姓名","身份证号","性别","电话","生日","年龄" });
 
 	shown_students = FileUtil::loadAllStudent();
-	shown_students.push_back(yujingyi);
 	for (auto student : shown_students) {
-		cout << student.toString() << endl;
+		studentTableTest.add_row({ student.getId(),student.getName(),student.getIdentityId(),student.getSex(),student.getPhone(),student.getBirthday(),to_string(student.getAge()) });
 	}
+	cout << studentTableTest << endl;
 	FileUtil::saveAllStudent(shown_students);
 
 	system("pause");
