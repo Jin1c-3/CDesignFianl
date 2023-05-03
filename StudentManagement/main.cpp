@@ -19,9 +19,9 @@ class User;
 class User
 {
 private:
-	string account;//å”¯ä¸€æ ‡è¯†
+	string account;//Î¨Ò»±êÊ¶
 	string password;
-	short role;//å­¦ç”Ÿ0ï¼Œè€å¸ˆ1
+	short role;//Ñ§Éú0£¬ÀÏÊ¦1
 public:
 	//constructors
 	User() {};
@@ -38,24 +38,24 @@ public:
 	void setRole(short role) { this->role = role; }
 	//methods
 	bool login();
-	//å’ŒUserç›¸å…³çš„
-	bool addOneUser(User user);//å¢åŠ ä¸€ä¸ªç”¨æˆ·ï¼Œéœ€è¦æ£€éªŒaccountçš„å”¯ä¸€æ€§
-	bool deleteOneUser(string account);//åˆ é™¤ä¸€ä¸ªç”¨æˆ·
-	bool showOneUser(string account);//æŸ¥çœ‹ä¸€ä¸ªç”¨æˆ·ä¿¡æ¯
-	bool showAllUser();//æŸ¥çœ‹æ‰€æœ‰ç”¨æˆ·ä¿¡æ¯
-	bool updateOneUser(User user);//ä¿®æ”¹ç”¨æˆ·ä¿¡æ¯
+	//ºÍUserÏà¹ØµÄ
+	bool addOneUser(User user);//Ôö¼ÓÒ»¸öÓÃ»§£¬ĞèÒª¼ìÑéaccountµÄÎ¨Ò»ĞÔ
+	bool deleteOneUser(string account);//É¾³ıÒ»¸öÓÃ»§
+	bool showOneUser(string account);//²é¿´Ò»¸öÓÃ»§ĞÅÏ¢
+	bool showAllUser();//²é¿´ËùÓĞÓÃ»§ĞÅÏ¢
+	bool updateOneUser(User user);//ĞŞ¸ÄÓÃ»§ĞÅÏ¢
 
-	//å’ŒStudentç›¸å…³çš„
-	// å…¬å…±æƒé™
-	bool updateOneStudent(Student student);//å­¦ç”Ÿåªèƒ½ä¿®æ”¹è‡ªå·±çš„ç”µè¯å’Œç”Ÿæ—¥ï¼Œè€å¸ˆå¯ä»¥ä»»æ„ä¿®æ”¹
-	//å­¦ç”Ÿçš„æƒé™
-	bool showOneStudent(string id);//å­¦ç”Ÿåªèƒ½æŸ¥çœ‹è‡ªå·±çš„å­¦ç”Ÿä¿¡æ¯
-	//è€å¸ˆçš„æƒé™
-	bool showAllStudent();//è€å¸ˆå¯ä»¥æŸ¥çœ‹æ‰€æœ‰å­¦ç”Ÿä¿¡æ¯
-	bool addOneStudent(Student student);//è€å¸ˆå¯ä»¥å¢åŠ ä¸€ä¸ªå­¦ç”Ÿ
-	bool deleteOneStudent(string id);//è€å¸ˆå¯ä»¥åˆ é™¤ä¸€ä¸ªå­¦ç”Ÿ
-	bool signUp();//åªæœ‰æ‹¥æœ‰ç®¡ç†å‘˜è´¦å·å’Œå¯†ç çš„è€å¸ˆå¯ä»¥æ³¨å†Œæ–°è€å¸ˆ
-	list<Student> loadStudent();//åŠ è½½æ‰€æœ‰å­¦ç”Ÿ
+	//ºÍStudentÏà¹ØµÄ
+	// ¹«¹²È¨ÏŞ
+	bool updateOneStudent(Student student);//Ñ§ÉúÖ»ÄÜĞŞ¸Ä×Ô¼ºµÄµç»°ºÍÉúÈÕ£¬ÀÏÊ¦¿ÉÒÔÈÎÒâĞŞ¸Ä
+	//Ñ§ÉúµÄÈ¨ÏŞ
+	bool showOneStudent(string id);//Ñ§ÉúÖ»ÄÜ²é¿´×Ô¼ºµÄÑ§ÉúĞÅÏ¢
+	//ÀÏÊ¦µÄÈ¨ÏŞ
+	bool showAllStudent();//ÀÏÊ¦¿ÉÒÔ²é¿´ËùÓĞÑ§ÉúĞÅÏ¢
+	bool addOneStudent(Student student);//ÀÏÊ¦¿ÉÒÔÔö¼ÓÒ»¸öÑ§Éú
+	bool deleteOneStudent(string id);//ÀÏÊ¦¿ÉÒÔÉ¾³ıÒ»¸öÑ§Éú
+	bool signUp();//Ö»ÓĞÓµÓĞ¹ÜÀíÔ±ÕËºÅºÍÃÜÂëµÄÀÏÊ¦¿ÉÒÔ×¢²áĞÂÀÏÊ¦
+	list<Student> loadStudent();//¼ÓÔØËùÓĞÑ§Éú
 };
 
 class Student
@@ -73,7 +73,7 @@ public:
 	Student() {};
 	inline Student(string id, string name, string identityId, string sex, string phone, string birthday)
 		:id(id), name(name), identityId(identityId), sex(sex), phone(phone), birthday(birthday) {
-		//è®¡ç®—å¹´é¾„å¹¶èµ‹å€¼
+		//¼ÆËãÄêÁä²¢¸³Öµ
 		int birthYear = atoi(birthday.substr(0, 4).c_str());
 		int birthMonth = atoi(birthday.substr(5, 2).c_str());
 		time_t now;
@@ -86,12 +86,12 @@ public:
 			age--;
 		}
 	};
-	Student(const Student& student)//è¿™é‡Œå¾—æ˜¯å¸¸å¼•ç”¨ï¼Œä¸ç„¶ä¼šæŠ¥é”™
+	Student(const Student& student)//ÕâÀïµÃÊÇ³£ÒıÓÃ£¬²»È»»á±¨´í
 		:id(student.id), name(student.name), identityId(student.identityId), sex(student.sex), phone(student.phone), birthday(student.birthday), age(student.age) {};
 	//getters and setters
-	string getStudentString()
+	string toString()
 	{
-		return id + " " + name + " " + sex + +" " + phone + " " + birthday + " " + to_string(age);
+		return id + "," + name + "," + sex + "," + phone + "," + birthday + "," + to_string(age);
 	}
 	string getId() { return id; }
 	string getName() { return name; }
@@ -112,25 +112,25 @@ public:
 class FileUtil
 {
 public:
-	static list<Student> loadAllStudent();//åŠ è½½æ‰€æœ‰å­¦ç”Ÿ
-	static list<User> loadAllUser();//åŠ è½½æ‰€æœ‰ç”¨æˆ·
-	static bool saveAllUser(list<User> users);//ä¿å­˜æ‰€æœ‰ç”¨æˆ·ï¼Œé‡‡ç”¨è¦†ç›–çš„æ–¹å¼å®ç°ï¼Œæ–¹ä¾¿ä¿®æ”¹ã€åˆ é™¤æ“ä½œçš„å®ç°
-	static bool saveAllStudent(list<Student> students);//ä¿å­˜æ‰€æœ‰å­¦ç”Ÿï¼Œé‡‡ç”¨è¦†ç›–çš„æ–¹å¼å®ç°ï¼Œæ–¹ä¾¿ä¿®æ”¹ã€åˆ é™¤æ“ä½œçš„å®ç°
+	static list<Student> loadAllStudent();//¼ÓÔØËùÓĞÑ§Éú
+	static list<User> loadAllUser();//¼ÓÔØËùÓĞÓÃ»§
+	static bool saveAllUser(list<User> users);//±£´æËùÓĞÓÃ»§£¬²ÉÓÃ¸²¸ÇµÄ·½Ê½ÊµÏÖ£¬·½±ãĞŞ¸Ä¡¢É¾³ı²Ù×÷µÄÊµÏÖ
+	static bool saveAllStudent(list<Student> students);//±£´æËùÓĞÑ§Éú£¬²ÉÓÃ¸²¸ÇµÄ·½Ê½ÊµÏÖ£¬·½±ãĞŞ¸Ä¡¢É¾³ı²Ù×÷µÄÊµÏÖ
 };
 
 class Panel
 {
 public:
-	void login();//ç™»é™†çš„å¯è§†åŒ–ç•Œé¢
+	void login();//µÇÂ½µÄ¿ÉÊÓ»¯½çÃæ
 };
 
 //global variables
-list<Student> shown_students;//æ­£åœ¨æ˜¾ç¤ºçš„å­¦ç”Ÿåˆ—è¡¨
-User now_user;//å½“å‰ç™»å½•çš„ç”¨æˆ·
+list<Student> shown_students;//ÕıÔÚÏÔÊ¾µÄÑ§ÉúÁĞ±í
+User now_user;//µ±Ç°µÇÂ¼µÄÓÃ»§
 
 list<Student> FileUtil::loadAllStudent() {
 	list<Student> students;
-	ifstream infile("..\\..\\student.txt");
+	ifstream infile("student.txt");
 	if (!infile) {
 		cerr << "Error opening file!" << endl;
 		return students;
@@ -153,32 +153,25 @@ list<Student> FileUtil::loadAllStudent() {
 	return students;
 }
 
-// å®šä¹‰ saveAllStudent å‡½æ•°
+// ¶¨Òå saveAllStudent º¯Êı
 bool FileUtil::saveAllStudent(list<Student> students) {
-	ofstream outfile("..\\..\\student.txt");
+	ofstream outfile("student.txt");
 	if (!outfile) {
 		cerr << "Error opening file!" << endl;
 		return false;
 	}
 	for (auto& student : students) {
-		outfile << student.getId() << ','
-			<< student.getName() << ','
-			<< student.getIdentityId() << ','
-			<< student.getSex() << ','
-			<< student.getPhone() << ','
-			<< student.getBirthday() << ','
-			<< student.getAge() << endl;
+		outfile << student.toString() << endl;
 	}
 	outfile.close();
 	return true;
 }
 
-
 int main() {
-	Student yujingyi("202100810120", "äºé–æ€¿", "510105200203280019", "ç”·", "18284559255", "2002-06");
-	cout << yujingyi.getStudentString() << endl;
+	Student yujingyi("202100810120", "ÓÚ¾²âù", "123456789012345678", "Å®", "12345678901", "2000-01-01");
+	cout << yujingyi.toString() << endl;
 
-	Table hellogithub; // åˆ›å»ºä¸€ä¸ªå«åš hellogithub çš„ Table å¯¹è±¡
+	Table hellogithub; // ´´½¨Ò»¸ö½Ğ×ö hellogithub µÄ Table ¶ÔÏó
 
 	hellogithub.add_row({ "HelloGitHub","HelloMotherfucker~" });
 	hellogithub.add_row({ "hellogithub.com" });
@@ -194,8 +187,9 @@ int main() {
 	cout << hellogithub << endl;
 
 	shown_students = FileUtil::loadAllStudent();
+	shown_students.push_back(yujingyi);
 	for (auto student : shown_students) {
-		cout << student.getStudentString() << endl;
+		cout << student.toString() << endl;
 	}
 	FileUtil::saveAllStudent(shown_students);
 

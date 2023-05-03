@@ -14,6 +14,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="..\..\student.txt" />
+    <Text Include="student.txt" />
   </ItemGroup>
 </Project>
