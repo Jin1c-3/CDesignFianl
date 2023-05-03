@@ -39,7 +39,7 @@ public:
 	bool showOneUser(string account);//查看一个用户信息
 	bool showAllUser();//查看所有用户信息
 	bool updateOneUser(User user);//修改用户信息
-	list<User> loadUser();//加载所有用户
+
 	//和Student相关的
 	// 公共权限
 	bool updateOneStudent(Student student);//学生只能修改自己的电话和生日，老师可以任意修改
@@ -49,7 +49,6 @@ public:
 	bool showAllStudent();//老师可以查看所有学生信息
 	bool addOneStudent(Student student);//老师可以增加一个学生
 	bool deleteOneStudent(string id);//老师可以删除一个学生
-	list<Student> loadStudent();//加载所有学生
 	bool signUp();//只有拥有管理员账号和密码的老师可以注册新老师
 };
 
@@ -102,6 +101,8 @@ public:
 class FileUtil
 {
 public:
+	static list<Student> loadStudent();//加载所有学生
+	static list<User> loadUser();//加载所有用户
 	static bool saveAllUser(list<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
 	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
 };
