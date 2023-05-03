@@ -16,9 +16,9 @@ class User;
 class User
 {
 private:
-	string account;//н╗р╩╠Йй╤
+	string account;//н╗р╩О©╫О©╫й╤
 	string password;
-	short role;//я╖иЗ0ё╛юой╕1
+	short role;//я╖О©╫О©╫0О©╫О©╫О©╫О©╫й╕1
 public:
 	//constructors
 	User() {};
@@ -35,24 +35,24 @@ public:
 	void setRole(short role) { this->role = role; }
 	//methods
 	bool login(User user);
-	//╨мUserоЮ╧ь╣д
-	bool addOneUser(User user);//тЖ╪ср╩╦Жсц╩╖ё╛пХр╙╪ЛяИaccount╣дн╗р╩пт
-	bool deleteOneUser(string account);//и╬ЁЩр╩╦Жсц╩╖
-	bool showOneUser(string account);//╡И©╢р╩╦Жсц╩╖пео╒
-	bool showAllUser();//╡И©╢кЫспсц╩╖пео╒
-	bool updateOneUser(User user);//пч╦дсц╩╖пео╒
-	list<User> loadUser();//╪стькЫспсц╩╖
-	//╨мStudentоЮ╧ь╣д
-	// ╧╚╧╡х╗оч
-	bool updateOneStudent(Student student);//я╖иЗж╩дэпч╦двт╪╨╣д╣Г╩╟╨миЗхуё╛юой╕©иртхнрБпч╦д
-	//я╖иЗ╣дх╗оч
-	bool showOneStudent(string id);//я╖иЗж╩дэ╡И©╢вт╪╨╣дя╖иЗпео╒
-	//юой╕╣дх╗оч
-	bool showAllStudent();//юой╕©ирт╡И©╢кЫспя╖иЗпео╒
-	bool addOneStudent(Student student);//юой╕©ирттЖ╪ср╩╦Жя╖иЗ
-	bool deleteOneStudent(string id);//юой╕©ирти╬ЁЩр╩╦Жя╖иЗ
-	list<Student> loadStudent();//╪стькЫспя╖иЗ
-	bool signUp(User user);//ж╩спс╣сп╧эюМт╠ук╨е╨мцэбК╣дюой╕©иртв╒╡Апбюой╕
+	//О©╫О©╫UserО©╫О©╫ь╣О©╫
+	bool addOneUser(User user);//О©╫О©╫О©╫О©╫р╩О©╫О©╫О©╫ц╩О©╫О©╫О©╫О©╫О©╫р╙О©╫О©╫О©╫О©╫accountО©╫О©╫н╗р╩О©╫О©╫
+	bool deleteOneUser(string account);//и╬О©╫О©╫р╩О©╫О©╫О©╫ц╩О©╫
+	bool showOneUser(string account);//О©╫И©╢р╩О©╫О©╫О©╫ц╩О©╫О©╫О©╫о╒
+	bool showAllUser();//О©╫И©╢О©╫О©╫О©╫О©╫О©╫ц╩О©╫О©╫О©╫о╒
+	bool updateOneUser(User user);//О©╫ч╦О©╫О©╫ц╩О©╫О©╫О©╫о╒
+
+	//О©╫О©╫StudentО©╫О©╫ь╣О©╫
+	// О©╫О©╫О©╫О©╫х╗О©╫О©╫
+	bool updateOneStudent(Student student);//я╖О©╫О©╫ж╩О©╫О©╫О©╫ч╦О©╫О©╫т╪О©╫О©╫д╣Г╩╟О©╫О©╫О©╫О©╫О©╫уёО©╫О©╫О©╫й╕О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ч╦О©╫
+	//я╖О©╫О©╫О©╫О©╫х╗О©╫О©╫
+	bool showOneStudent(string id);//я╖О©╫О©╫ж╩О©╫э╡И©╢О©╫т╪О©╫О©╫О©╫я╖О©╫О©╫О©╫О©╫о╒
+	//О©╫О©╫й╕О©╫О©╫х╗О©╫О©╫
+	bool showAllStudent();//О©╫О©╫й╕О©╫О©╫О©╫т╡И©╢О©╫О©╫О©╫О©╫я╖О©╫О©╫О©╫О©╫о╒
+	bool addOneStudent(Student student);//О©╫О©╫й╕О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫р╩О©╫О©╫я╖О©╫О©╫
+	bool deleteOneStudent(string id);//О©╫О©╫й╕О©╫О©╫О©╫О©╫и╬О©╫О©╫р╩О©╫О©╫я╖О©╫О©╫
+	list<Student> loadStudent();//О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫я╖О©╫О©╫
+	bool signUp(User user);//ж╩О©╫О©╫с╣О©╫п╧О©╫О©╫О©╫т╠О©╫к╨е╨О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫й╕О©╫О©╫О©╫О©╫в╒О©╫О©╫О©╫О©╫О©╫О©╫й╕
 };
 
 class Student
@@ -70,7 +70,7 @@ public:
 	Student() {};
 	inline Student(string id, string name, string identityId, string sex, string birthday)
 		:id(id), name(name), identityId(identityId), sex(sex), birthday(birthday) {
-		//╪фкЦдЙаД╡╒╦Ёж╣
+		//О©╫О©╫О©╫О©╫О©╫О©╫О©╫Д╡╒О©╫О©╫ж╣
 		int birthYear = atoi(birthday.substr(0, 4).c_str());
 		int birthMonth = atoi(birthday.substr(5, 2).c_str());
 		time_t now;
@@ -104,27 +104,29 @@ public:
 class FileUtil
 {
 public:
-	static bool saveAllUser(list<User> users);//╠ё╢ФкЫспсц╩╖ё╛╡исц╦╡╦г╣д╥╫й╫й╣ожё╛╥╫╠Цпч╦д║╒и╬ЁЩ╡ывВ╣дй╣ож
-	static bool saveAllStudent(list<Student> students);//╠ё╢ФкЫспя╖иЗё╛╡исц╦╡╦г╣д╥╫й╫й╣ожё╛╥╫╠Цпч╦д║╒и╬ЁЩ╡ывВ╣дй╣ож
-	static list<User> loadAllUser();//loadUser()╣дй╣ож
-	static list<Student> loadAllStudent();//loadStudent()╣дй╣ож
+	static list<Student> loadStudent();//О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫я╖О©╫О©╫
+	static list<User> loadUser();//О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ц╩О©╫
+	static bool saveAllUser(list<User> users);//О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫ц╩О©╫О©╫О©╫О©╫О©╫О©╫ц╦О©╫О©╫г╣д╥О©╫й╫й╣О©╫жёО©╫О©╫О©╫О©╫О©╫О©╫ч╦д║О©╫и╬О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫й╣О©╫О©╫
+	static bool saveAllStudent(list<Student> students);//О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫я╖О©╫О©╫О©╫О©╫О©╫О©╫О©╫ц╦О©╫О©╫г╣д╥О©╫й╫й╣О©╫жёО©╫О©╫О©╫О©╫О©╫О©╫ч╦д║О©╫и╬О©╫О©╫О©╫О©╫О©╫О©╫О©╫О©╫й╣О©╫О©╫
+	static list<User> loadAllUser();//loadUser()О©╫О©╫й╣О©╫О©╫
+	static list<Student> loadAllStudent();//loadStudent()О©╫О©╫й╣О©╫О©╫
 };
 
 class Panel
 {
 public:
-	void login();//╣гб╪цФ╟Е
+	void login();//О©╫О©╫б╪О©╫О©╫О©╫
 };
 
 //global variables
-list<Student> shown_students;//уЩтзотй╬╣дя╖иЗап╠М
-User now_user;//╣╠г╟╣гб╪╣дсц╩╖
+list<Student> shown_students;//О©╫О©╫О©╫О©╫О©╫О©╫й╬О©╫О©╫я╖О©╫О©╫О©╫п╠О©╫
+User now_user;//О©╫О©╫г╟О©╫О©╫б╪О©╫О©╫О©╫ц╩О©╫
 
 int main() {
-	Student student("202100810120", "сз╬╦БЬ", "510105200203280019", "дп", "2002-06");
+	Student student("202100810120", "О©╫з╬О©╫О©╫О©╫", "510105200203280019", "О©╫О©╫", "2002-06");
 	cout << student.getAge() << endl;
 
-	Table hellogithub; // ╢╢╫╗р╩╦Ж╫пвЖ hellogithub ╣д Table ╤тоС
+	Table hellogithub; // О©╫О©╫О©╫О©╫р╩О©╫О©╫О©╫О©╫О©╫О©╫ hellogithub О©╫О©╫ Table О©╫О©╫О©╫О©╫
 
 	hellogithub.add_row({ "HelloGitHub","HelloMotherfucker~" });
 	hellogithub.add_row({ "hellogithub.com" });
