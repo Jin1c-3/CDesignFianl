@@ -1,0 +1,3 @@
+C:/Project/C&C++/StudentManagement/StudentManagement/build/CMakeFiles/main.dir
+C:/Project/C&C++/StudentManagement/StudentManagement/build/CMakeFiles/ALL_BUILD.dir
+C:/Project/C&C++/StudentManagement/StudentManagement/build/CMakeFiles/ZERO_CHECK.dir
