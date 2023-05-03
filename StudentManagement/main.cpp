@@ -27,11 +27,14 @@ public:
 	User() {};
 	User(string account, string password, short role)
 		:account(account), password(password), role(role) {};
-	User(User& user)
+	User(const User& user)//定义为常拷贝
 		:account(user.account), password(user.password), role(user.role) {};
 	//getters and setters
 	string getAccount() { return account; }
 	string getPassword() { return password; }
+	string getUser() const {
+		return account + "," + password + "," + to_string(role);
+	}
 	short getRole() { return role; }
 	void setAccount(string account) { this->account = account; }
 	void setPassword(string password) { this->password = password; }
@@ -55,7 +58,6 @@ public:
 	bool addOneStudent(Student student);//老师可以增加一个学生
 	bool deleteOneStudent(string id);//老师可以删除一个学生
 	bool signUp();//只有拥有管理员账号和密码的老师可以注册新老师
-	list<Student> loadStudent();//加载所有学生
 };
 
 class Student
@@ -143,6 +145,7 @@ public:
 
 //global variables
 list<Student> shown_students;//正在显示的学生列表
+list<User> allUser;//所有用户
 User now_user;//当前登录的用户
 
 list<Student> FileUtil::loadAllStudent() {
@@ -184,6 +187,43 @@ bool FileUtil::saveAllStudent(list<Student> students) {
 	return true;
 }
 
+// 加载所有用户
+list<User> FileUtil::loadAllUser() {
+	list<User> users;
+	ifstream infile("E:\\code\\StudentManagement\\user.txt");
+	if (!infile) {
+		cerr << "Error opening file!" << endl;
+		return users;
+	}
+	string line;
+	while (getline(infile, line)) {
+		istringstream iss(line);
+		string account, password, roleStr;
+		getline(iss, account, ',');
+		getline(iss, password, ',');
+		getline(iss, roleStr, ',');
+		short role = stoi(roleStr);
+		User user(account, password, role);
+		users.push_back(user);
+	}
+	infile.close();
+	return users;
+}
+
+// 保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
+bool FileUtil::saveAllUser(list<User> users) {
+	ofstream outfile("E:\\code\\StudentManagement\\user.txt");
+	if (!outfile) {
+		cerr << "Error opening file!" << endl;
+		return false;
+	}
+	for (auto& user : users) {
+		outfile << user.getUser() << endl;
+	}
+	outfile.close();
+	return true;
+}
+
 int main() {
 	Student yujingyi("202100810120", "于静怡", "123456789012345678", "女", "12345678901", "2000-01");
 	cout << yujingyi.toString() << endl;
@@ -197,6 +237,12 @@ int main() {
 	}
 	cout << studentTableTest << endl;
 	FileUtil::saveAllStudent(shown_students);
+
+	allUser = FileUtil::loadAllUser();
+	for (auto user : allUser) {
+		cout << user.getUser() << endl;
+	}
+	FileUtil::saveAllUser(allUser);
 
 	system("pause");
 	return 0;
