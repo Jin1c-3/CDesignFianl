@@ -32,7 +32,7 @@ public:
 	//getters and setters
 	string getAccount() { return account; }
 	string getPassword() { return password; }
-	string getUser() const {
+	inline string toString() const {
 		return account + "," + password + "," + to_string(role);
 	}
 	short getRole() { return role; }
@@ -91,7 +91,7 @@ public:
 	Student(const Student& student)//这里得是常引用，不然会报错
 		:id(student.id), name(student.name), identityId(student.identityId), sex(student.sex), phone(student.phone), birthday(student.birthday), age(student.age) {};
 	//getters and setters
-	inline string toString()
+	inline string toString() const
 	{
 		return id + "," + name + "," + identityId + "," + sex + "," + phone + "," + birthday + "," + to_string(age);
 	}
@@ -133,14 +133,17 @@ public:
 class Panel
 {
 public:
-	void loading();//通用加载页面
-	void menu();//主界面
-	void login();//登陆的可视化界面
-	void signUp();//注册教师的可视化界面
-	void error();//通用错误页面
-	void studentOperation(list<Student> students);//显示学生信息，同时包括更新、删除、增加的功能
-	void studentOperation(Student student);//显示单个学生信息，同时包括更新电话的功能
-	void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
+	static void loading();//通用加载页面
+	static void menu();//主界面
+	static void login();//登陆的可视化界面
+	static void signUp();//注册教师的可视化界面
+	static void error();//通用错误页面
+	static void studentOperation(list<Student> students);//显示学生信息，同时包括更新、删除、增加的功能
+	static void studentOperation(Student student);//显示单个学生信息，同时包括更新电话的功能
+	static void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
+	static void showStudent(list<Student> students);//只负责显示学生信息的表格，其他一概不管
+	static void showStudent(Student student);//只负责显示单个学生信息的表格，其他一概不管
+	static void showUser(list<User> users);//只负责显示用户信息的表格，其他一概不管
 };
 
 //global variables
@@ -165,7 +168,7 @@ list<Student> FileUtil::loadAllStudent() {
 		getline(iss, sex, ',');
 		getline(iss, phone, ',');
 		getline(iss, birthday, ',');
-		getline(iss, ageStr, ',');
+		getline(iss, ageStr, '\n');
 		Student student(id, name, identityId, sex, phone, birthday);
 		students.push_back(student);
 	}
@@ -218,30 +221,118 @@ bool FileUtil::saveAllUser(list<User> users) {
 		return false;
 	}
 	for (auto& user : users) {
-		outfile << user.getUser() << endl;
+		outfile << user.toString() << endl;
 	}
 	outfile.close();
 	return true;
 }
 
-int main() {
-	Student yujingyi("202100810120", "于静怡", "123456789012345678", "女", "12345678901", "2000-01");
-	cout << yujingyi.toString() << endl;
-
-	Table studentTableTest; // 创建一个叫做 hellogithub 的 Table 对象
-	studentTableTest.add_row({ "学号","姓名","身份证号","性别","电话","生日","年龄" });
-
-	shown_students = FileUtil::loadAllStudent();
-	for (auto student : shown_students) {
-		studentTableTest.add_row({ student.getId(),student.getName(),student.getIdentityId(),student.getSex(),student.getPhone(),student.getBirthday(),to_string(student.getAge()) });
+void Panel::showStudent(list<Student>students) {
+	Table table;
+	table.add_row({ "学号","姓名","身份证号","性别","电话","生日","年龄" });
+	for (auto student : students) {
+		table.add_row({ student.getId(),student.getName(),student.getIdentityId(),student.getSex(),student.getPhone(),student.getBirthday(),to_string(student.getAge()) });
 	}
-	cout << studentTableTest << endl;
+	//第一行的属性值
+	table[0].format()
+		.font_style({ FontStyle::bold })
+		.font_style({ FontStyle::underline })
+		.font_background_color(Color::green)
+		.font_color(Color::blue);
+	//遍历所有行
+	for (auto& roe : table) {
+		roe.format().font_align(FontAlign::center);
+	}
+	//表格边框设置
+	table.format()
+		.multi_byte_characters(true)
+		// Font styling
+		.font_style({ FontStyle::bold, FontStyle::dark })
+		.font_align(FontAlign::center)
+		.font_color(Color::red)
+		.font_background_color(Color::yellow)
+		// Corners
+		.corner_top_left("x")
+		.corner_top_right("x")
+		.corner_bottom_left("x")
+		.corner_bottom_right("x")
+		.corner_top_left_color(Color::cyan)
+		.corner_top_right_color(Color::yellow)
+		.corner_bottom_left_color(Color::green)
+		.corner_bottom_right_color(Color::red)
+		// Borders
+		.border_top("*")
+		.border_bottom("*")
+		.border_left("*")
+		.border_right("*")
+		.border_left_color(Color::yellow)
+		.border_right_color(Color::green)
+		.border_top_color(Color::cyan)
+		.border_bottom_color(Color::red);
+	cout << table << endl;
+}
+
+void Panel::showStudent(Student student) {
+	list<Student>temp = { student };
+	showStudent(temp);
+}
+
+void Panel::showUser(list<User> users) {
+	Table table;
+	table.add_row({ "账号","密码","权限" });
+	for (auto user : users) {
+		table.add_row({ user.getAccount(),user.getPassword(),to_string(user.getRole()) });
+	}
+	//第一行的属性值
+	table[0].format()
+		.font_style({ FontStyle::bold })
+		.font_style({ FontStyle::underline })
+		.font_background_color(Color::green)
+		.font_color(Color::blue);
+	//遍历所有行
+	for (auto& roe : table) {
+		roe.format().font_align(FontAlign::center);
+	}
+	//遍历第三列的所有单元格
+	for (auto& col_cell : table.column(2)) {
+		if (col_cell.get_text() == "1") {
+			col_cell.format().font_background_color(Color::red);
+		}
+	}
+	//表格边框设置
+	table.format()
+		.multi_byte_characters(true)
+		// Font styling
+		.font_style({ FontStyle::bold, FontStyle::dark })
+		.font_align(FontAlign::center)
+		.font_color(Color::red)
+		.font_background_color(Color::yellow)
+		// Corners
+		.corner_top_left("x")
+		.corner_top_right("x")
+		.corner_bottom_left("x")
+		.corner_bottom_right("x")
+		.corner_top_left_color(Color::cyan)
+		.corner_top_right_color(Color::yellow)
+		.corner_bottom_left_color(Color::green)
+		.corner_bottom_right_color(Color::red)
+		// Borders
+		.border_top("*")
+		.border_bottom("*")
+		.border_left("*")
+		.border_right("*")
+		.border_left_color(Color::yellow)
+		.border_right_color(Color::green)
+		.border_top_color(Color::cyan)
+		.border_bottom_color(Color::red);
+	cout << table << endl;
+}
+
+int main() {
+	Panel::showStudent(shown_students = FileUtil::loadAllStudent());
 	FileUtil::saveAllStudent(shown_students);
 
-	allUser = FileUtil::loadAllUser();
-	for (auto user : allUser) {
-		cout << user.getUser() << endl;
-	}
+	Panel::showUser(allUser = FileUtil::loadAllUser());
 	FileUtil::saveAllUser(allUser);
 
 	system("pause");
