@@ -12,6 +12,9 @@
 using namespace tabulate;
 using namespace std;
 
+string PATH = "E:\\code\\StudentManagement\\";
+//string PATH = "";
+
 //forward declarations
 class Student;
 class User;
@@ -150,7 +153,7 @@ User now_user;//当前登录的用户
 
 list<Student> FileUtil::loadAllStudent() {
 	list<Student> students;
-	ifstream infile("student.txt");
+	ifstream infile(PATH + "student.txt");
 	if (!infile) {
 		cerr << "Error opening file!" << endl;
 		return students;
@@ -175,7 +178,7 @@ list<Student> FileUtil::loadAllStudent() {
 
 // 定义 saveAllStudent 函数
 bool FileUtil::saveAllStudent(list<Student> students) {
-	ofstream outfile("student.txt");
+	ofstream outfile(PATH + "student.txt");
 	if (!outfile) {
 		cerr << "Error opening file!" << endl;
 		return false;
@@ -190,7 +193,7 @@ bool FileUtil::saveAllStudent(list<Student> students) {
 // 加载所有用户
 list<User> FileUtil::loadAllUser() {
 	list<User> users;
-	ifstream infile("E:\\code\\StudentManagement\\user.txt");
+	ifstream infile(PATH + "user.txt");
 	if (!infile) {
 		cerr << "Error opening file!" << endl;
 		return users;
@@ -212,7 +215,7 @@ list<User> FileUtil::loadAllUser() {
 
 // 保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
 bool FileUtil::saveAllUser(list<User> users) {
-	ofstream outfile("E:\\code\\StudentManagement\\user.txt");
+	ofstream outfile(PATH + "user.txt");
 	if (!outfile) {
 		cerr << "Error opening file!" << endl;
 		return false;
