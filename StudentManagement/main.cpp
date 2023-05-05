@@ -7,6 +7,7 @@
 #include <fstream>
 #include <iostream>
 #include <sstream>
+#include <conio.h>
 #include "tabulate/table.hpp"
 
 using namespace tabulate;
@@ -147,6 +148,7 @@ public:
 };
 
 //global variables
+list<Student> allStudengs;//所有学生
 list<Student> shown_students;//正在显示的学生列表
 list<User> allUser;//所有用户
 User now_user;//当前登录的用户
@@ -328,12 +330,167 @@ void Panel::showUser(list<User> users) {
 	cout << table << endl;
 }
 
+bool User::login()
+{
+	string account, password;
+	cout << "请输入账号：";
+	cin >> account;
+	cout << "请输入密码：";
+	cin >> password;
+	for (auto& user : allUser) {
+		if (user.getAccount() == account && user.getPassword() == password) {
+			this->account = account;
+			this->password = password;
+			this->role = user.getRole();
+			return true;
+		}
+	}
+	return false;
+}
+
+bool User::addOneUser(User user)//增加一个用户，需要检验account的唯一性
+{
+	for (auto& u : allUser) {
+		if (u.getAccount() == user.getAccount()) {
+			cout << "账号已存在" << endl;
+			return false;
+		}
+	}
+	allUser.push_back(user);
+	return true;
+}
+
+bool User::deleteOneUser(string account) {
+    for (auto it = allUser.begin(); it != allUser.end(); ++it) {
+        if (it->getAccount() == account) {
+            allUser.erase(it);
+            return true;
+        }
+    }
+    cout << "账号不存在" << endl;
+    return false;
+}
+
+
+//查看一个用户信息
+bool User::showOneUser(string account) 
+{
+    for (auto& user : allUser) 
+	{
+        if (user.getAccount() == account)
+		{ 
+			list<User> tempList;
+			tempList.push_back(user);
+			Panel::showUser(tempList);
+			return true;
+		}
+    }
+    cout << "账号不存在" << endl;
+    return false;
+}
+
+bool User::showAllUser()//查看所有用户信息
+{
+	Panel::showUser(allUser);
+	return true;
+}
+
+//修改用户密码
+bool User::updateOneUser(User user) {
+    for (auto& u : allUser) {
+        if (u.getAccount() == user.getAccount()) {
+            // 要求用户输入原密码
+            string old_password;
+            cout << "请输入原密码：";
+            // 将输入的字符替换为'*'
+            char ch;
+            while ((ch = _getch()) != '\r') {
+                if (ch == '\b') {
+                    if (!old_password.empty()) {
+                        old_password.pop_back();
+                        cout << "\b \b";
+                    }
+                } else {
+                    old_password.push_back(ch);
+                    cout << "*";
+                }
+            }
+            cout << endl;
+            if (old_password != u.getPassword()) {
+                cout << "密码错误" << endl;
+                return false;
+            }
+            // 要求用户输入新密码
+            string new_password;
+            cout << "请输入新密码：";
+            // 将输入的字符替换为'*'
+            while ((ch = _getch()) != '\r') {
+                if (ch == '\b') {
+                    if (!new_password.empty()) {
+                        new_password.pop_back();
+                        cout << "\b \b";
+                    }
+                } else {
+                    new_password.push_back(ch);
+                    cout << "*";
+                }
+            }
+            cout << endl;
+            u.setPassword(new_password);
+            return true;
+        }
+    }
+    cout << "账号不存在" << endl;
+    return false;
+}
+
 int main() {
+
+	/*测试表格
 	Panel::showStudent(shown_students = FileUtil::loadAllStudent());
 	FileUtil::saveAllStudent(shown_students);
 
 	Panel::showUser(allUser = FileUtil::loadAllUser());
-	FileUtil::saveAllUser(allUser);
+	FileUtil::saveAllUser(allUser);*/
+
+
+	/*测试登录
+	allUser = FileUtil::loadAllUser();
+	User user1;
+	if (user1.login())
+		cout << "登录成功" << endl;
+	else cout << "账号或密码错误" << endl;*/
+	
+	/*测试添加账户
+	allUser = FileUtil::loadAllUser();
+	User testUser1("20210080000", "00000000", 1); 
+	if (now_user.addOneUser(testUser1))
+		cout << "成功添加" << endl;
+	User testUser2("20210080000", "00000000", 1);
+	if (now_user.addOneUser(testUser2))
+		cout << "成功添加" << endl;*/
+
+	/*测试删除账号
+	allUser = FileUtil::loadAllUser();
+	if (now_user.deleteOneUser("202100810120"))
+		cout << "成功删除" << endl;
+	now_user.deleteOneUser("202100810120");*/
+
+	/*测试显示单个用户信息
+	allUser = FileUtil::loadAllUser();
+	now_user.showOneUser("202100810120");
+	now_user.showOneUser("20210081020");*/
+
+	/*显示所有用户信息
+	allUser = FileUtil::loadAllUser();
+	now_user.showAllUser();*/
+
+	/*修改密码
+    allUser = FileUtil::loadAllUser();
+    User user;
+    user.setAccount("202100800000");
+    user.updateOneUser(user);
+	Panel::showUser(allUser);*/
 
 	system("pause");
 	return 0;
