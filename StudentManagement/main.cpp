@@ -337,8 +337,23 @@ bool User::login()
 	string account, password;
 	cout << "请输入账号：";
 	cin >> account;
+
 	cout << "请输入密码：";
-	cin >> password;
+	char ch = _getch();
+	while (ch != '\r') {
+		if (ch == 8) {
+			if (!password.empty()) {
+				password.pop_back();
+				cout << "\b \b";
+			}
+		}
+		else {
+			password.push_back(ch);
+			cout << '*';
+		}
+		ch = _getch();
+	}
+	cout << endl;
 	for (auto& user : allUser) {
 		if (user.getAccount() == account && user.getPassword() == password) {
 			this->account = account;
@@ -347,6 +362,8 @@ bool User::login()
 			return true;
 		}
 	}
+
+	cout << "账号或密码错误" << endl;
 	return false;
 }
 
@@ -373,6 +390,48 @@ bool User::deleteOneUser(string account) {
     return false;
 }
 
+bool User::updateOneStudent(Student student)//学生只能修改自己的电话和生日，老师可以任意修改
+// 检验nowUser的role，如果是0说明是学生，只能修改自己的电话和生日，如果是1说明是老师可以修改任意学生任意信息，
+{
+	if (nowUser.getRole() == 0) {
+		// 如果是学生，只能修改自己的电话和生日
+		for (auto& s : allStudengs) {
+			if (s.getId() == student.getId()) {
+				if (s.getId() != nowUser.getAccount()) {
+					cout << "您只能修改自己的信息" << endl;
+					return false;
+				}
+				s.setPhone(student.getPhone());
+				s.setBirthday(student.getBirthday());
+				cout << "修改成功" << endl;
+				return true;
+			}
+		}
+		cout << "学号不存在" << endl;
+		return false;
+	}
+	else if (nowUser.getRole() == 1) {
+		// 如果是老师，可以修改任意学生任意信息
+		for (auto& s : allStudengs) {
+			if (s.getId() == student.getId()) {
+				s.setName(student.getName());
+				s.setSex(student.getSex());
+				s.setPhone(student.getPhone());
+				s.setBirthday(student.getBirthday());
+				s.setAge(student.getAge());
+				cout << "修改成功" << endl;
+				return true;
+			}
+		}
+		cout << "学号不存在" << endl;
+		return false;
+	}
+	else {
+		// 如果是其他用户，无权修改
+		cout << "您无权修改" << endl;
+		return false;
+	}
+}
 
 //查看一个用户信息
 bool User::showOneUser(string account) 
@@ -507,39 +566,71 @@ bool User::deleteOneStudent(string id)//老师可以删除一个学生
 
 //输入指定管理员账号（admin）和密码(admin)，之后可以注册新老师
 bool User::signUp() {
-    // 输入管理员账号和密码
-    string admin_account = "admin";
-    string admin_password = "admin";
-    string input_account, input_password;
+	// 输入管理员账号和密码
+	string admin_account = "admin";
+	string admin_password = "admin";
+	string input_account, input_password;
 	cout << "请输入管理员账号： ";
 	cin >> input_account;
+
 	cout << "请输入管理员密码： ";
-	cin >> input_password;
-    // 判断输入的账号和密码是否正确
-    if (admin_account == input_account && admin_password == input_password) {
-        // 输入新老师的账号和密码
-        string new_account, new_password;
-        cout << "请输入新的教师账号： ";
+	input_password = "";
+	char ch;
+	while ((ch = _getch()) != '\r') {
+		if (ch == '\b') { // 如果是回退键
+			if (!input_password.empty()) {
+				input_password.pop_back();
+				cout << "\b \b";
+			}
+		}
+		else {
+			input_password.push_back(ch);
+			cout << "*";
+		}
+	}
+	cout << endl;
+
+	// 判断输入的账号和密码是否正确
+	if (admin_account == input_account && admin_password == input_password) {
+		// 输入新老师的账号和密码
+		string new_account, new_password;
+		cout << "请输入新的教师账号： ";
 		cin >> new_account;
+
 		cout << "请输入新的教师密码： ";
-		cin >> new_password;
-        // 检查是否存在相同的账号
-        for (auto& u : allUser) {
-            if (u.getAccount() == new_account) {
-                cout << "账号已存在" << endl;
-                return false;
-            }
-        }
-        // 添加新老师
-        User new_teacher(new_account, new_password, 1);
-        allUser.push_back(new_teacher);
-        FileUtil::saveAllUser(allUser);
-        cout << "新老师已添加" << endl;
-        return true;
-    } else {
-        cout << "管理员账号或密码错误" << endl;
-        return false;
-    }
+		new_password = "";
+		while ((ch = _getch()) != '\r') {
+			if (ch == '\b') { // 如果是回退键
+				if (!new_password.empty()) {
+					new_password.pop_back();
+					cout << "\b \b";
+				}
+			}
+			else {
+				new_password.push_back(ch);
+				cout << "*";
+			}
+		}
+		cout << endl;
+
+		// 检查是否存在相同的账号
+		for (auto& u : allUser) {
+			if (u.getAccount() == new_account) {
+				cout << "账号已存在" << endl;
+				return false;
+			}
+		}
+		// 添加新老师
+		User new_teacher(new_account, new_password, 1);
+		allUser.push_back(new_teacher);
+		FileUtil::saveAllUser(allUser);
+		cout << "新老师已添加" << endl;
+		return true;
+	}
+	else {
+		cout << "管理员账号或密码错误" << endl;
+		return false;
+	}
 }
 
 int main() {
@@ -552,12 +643,11 @@ int main() {
 	FileUtil::saveAllUser(allUser);*/
 
 
-	/*测试登录
-	allUser = FileUtil::loadAllUser();
+	//测试登录
+	/*allUser = FileUtil::loadAllUser();
 	User user1;
 	if (user1.login())
-		cout << "登录成功" << endl;
-	else cout << "账号或密码错误" << endl;*/
+		cout << "登录成功" << endl;*/
 	
 	/*测试添加账户
 	allUser = FileUtil::loadAllUser();
@@ -627,6 +717,14 @@ int main() {
 	allStudengs = FileUtil::loadAllStudent();
 	nowUser.signUp();*/
 	
+	//学生修改自己信息
+	/*allUser = FileUtil::loadAllUser();
+	allStudengs = FileUtil::loadAllStudent();
+	nowUser.login();
+	Student student("202100810120", "静京", "123456789012345633", "男", "12345678802", "2000-03");
+	nowUser.updateOneStudent(student);*/
+	
+
 	system("pause");
 	return 0;
 }
