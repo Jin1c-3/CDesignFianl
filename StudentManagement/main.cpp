@@ -56,10 +56,10 @@ public:
 	bool showMyself();//学生可以查看自己的信息
 
 	//老师的权限
-	bool showOneStudent(string id);//老师可以查看一个学生信息
+	bool showOneStudent();//老师可以查看一个学生信息
 	bool showAllStudent();//老师可以查看所有学生信息
 	bool addOneStudent(Student student);//老师可以增加一个学生
-	bool deleteOneStudent(string id);//老师可以删除一个学生
+	bool deleteOneStudent();//老师可以删除一个学生
 	bool signUp();//只有拥有管理员账号和密码的老师可以注册新老师
 };
 
@@ -135,12 +135,14 @@ public:
 
 class Panel
 {
-private:
+public:
 	static Table getStdOuterFrame();
 	static Table getStdInnerFrame();
 	inline static void pause(string message="系统温馨提示：输入任意键以继续...") {
 		cout << message << endl;
 		getchar();
+		string temp;
+		getline(cin, temp);
 	};
 	inline static string inputWithSecret() {
 		string secret;
@@ -160,7 +162,6 @@ private:
 		}
 		return secret;
 	}
-public:
 	static void loading(string) ;//通用加载页面
 	static void menu();//主界面
 	static bool login();//登陆的可视化界面
@@ -170,16 +171,16 @@ public:
 	static void studentOperation(list<Student> students);//显示学生信息，同时包括更新、删除、增加的功能
 	static void studentOperation(Student student);//显示单个学生信息，同时包括更新电话的功能
 	static void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
-	static void showStudent(list<Student> students);//只负责显示学生信息的表格，其他一概不管
-	static void showStudent(Student student);//只负责显示单个学生信息的表格，其他一概不管
-	static void showUser(list<User> users);//只负责显示用户信息的表格，其他一概不管
+	static Table showStudent(list<Student> const& students);//只负责显示学生信息的表格，其他一概不管
+	static Table showStudent(Student const& student);//只负责显示单个学生信息的表格，其他一概不管
+	static Table showUser(list<User> users);//只负责显示用户信息的表格，其他一概不管
 };
 
 //global variables
-list<Student> allStudengs;//所有学生
+list<Student> allStudents;//所有学生
 list<Student> shownStudents;//正在显示的学生列表
 list<User> allUser;//所有用户
-User nowUser;//当前登录的用户
+User nowUser("", "", -1);//当前登录的用户
 
 list<Student> FileUtil::loadAllStudent() {
 	list<Student> students;
@@ -234,7 +235,7 @@ list<User> FileUtil::loadAllUser() {
 		string account, password, roleStr;
 		getline(iss, account, ',');
 		getline(iss, password, ',');
-		getline(iss, roleStr, ',');
+		getline(iss, roleStr, '\n');
 		short role = stoi(roleStr);
 		User user(account, password, role);
 		users.push_back(user);
@@ -257,7 +258,7 @@ bool FileUtil::saveAllUser(list<User> users) {
 	return true;
 }
 
-void Panel::showStudent(list<Student>students) {
+Table Panel::showStudent(list<Student> const& students) {
 	Table table;
 	table.add_row({ "学号","姓名","身份证号","性别","电话","生日","年龄" });
 	for (auto student : students) {
@@ -270,8 +271,8 @@ void Panel::showStudent(list<Student>students) {
 		.font_background_color(Color::green)
 		.font_color(Color::blue);
 	//遍历所有行
-	for (auto& roe : table) {
-		roe.format().font_align(FontAlign::center);
+	for (auto& row : table) {
+		row.format().font_align(FontAlign::center);
 	}
 	//表格边框设置
 	table.format()
@@ -299,15 +300,15 @@ void Panel::showStudent(list<Student>students) {
 		.border_right_color(Color::green)
 		.border_top_color(Color::cyan)
 		.border_bottom_color(Color::red);
-	cout << table << endl;
+	return table;
 }
 
-void Panel::showStudent(Student student) {
+Table Panel::showStudent(Student const& student) {
 	list<Student>temp = { student };
-	showStudent(temp);
+	return showStudent(temp);
 }
 
-void Panel::showUser(list<User> users) {
+Table Panel::showUser(list<User> users) {
 	Table table;
 	table.add_row({ "账号","密码","权限" });
 	for (auto user : users) {
@@ -355,7 +356,7 @@ void Panel::showUser(list<User> users) {
 		.border_right_color(Color::green)
 		.border_top_color(Color::cyan)
 		.border_bottom_color(Color::red);
-	cout << table << endl;
+	return table;
 }
 
 void Panel::loading(string message="正在加载中>>>>>>") {
@@ -468,7 +469,6 @@ bool Panel::login() {
 	outer_frame.add_row({ account_frame });
 	cout << outer_frame << endl;
 
-	getchar();//防止pause() bug，不可以删除
 	Panel::pause();
 
 	nowUser.setAccount(account);
@@ -487,6 +487,8 @@ bool Panel::login() {
 }
 
 void Panel::menu() {
+	system("cls");
+
 	Table outer_frame = Panel::getStdOuterFrame();
 	Table inner_frame = Panel::getStdInnerFrame();
 	inner_frame.add_row({ "目录" });
@@ -499,25 +501,59 @@ void Panel::menu() {
 
 	short login_role_state = nowUser.getRole();
 
-	if (login_role_state == 1) {
-		cout << "老师登陆成功" << endl;
-		return;
-	}
-	else if (login_role_state == 0) {
-		cout << "学生登陆成功" << endl;
+	if (login_role_state != -1) {
+		inner_frame.add_row({ "请输入操作命令" });
+		inner_frame.add_row({ "1.查看所有学生" });
+		inner_frame.add_row({ "2.查看所有用户" });
+		inner_frame.add_row({ "3.查看自己的学生信息" });
+		inner_frame.add_row({ "4.输入学号查找一位同学" });
+		inner_frame.add_row({ "5.输入学号删除一位同学" });
+
+		outer_frame.add_row({ inner_frame });
+
+		cout << outer_frame << endl;
+
+		string command;
+		cin >> command;
+		if (command == "1") {
+			nowUser.showAllStudent();
+			Panel::menu();
+		}
+		else if (command == "2") {
+			nowUser.showAllUser();
+			Panel::menu();
+		}
+		else if (command == "3") {
+			nowUser.showMyself();
+			Panel::menu();
+		}
+		else if (command == "4") {
+			nowUser.showOneStudent();
+			Panel::menu();
+		}
+		else if (command == "5") {
+			nowUser.deleteOneStudent();
+			Panel::menu();
+		}
+		else {
+			Panel::success("感谢您的使用和信赖！");
+		}
 		return;
 	}
 	inner_frame.add_row({ "请先登录" });
+	inner_frame[0][0]
+		.format()
+		.color(Color::red);
 	outer_frame.add_row({ inner_frame });
 	cout << outer_frame << endl;
 
-	Panel::pause("输入任意键以登录...");
+	Panel::pause("按任意键以登录...");
 
 	if (Panel::login()) {
 		Panel::menu();
 	}
 	else {
-		Panel::login();
+		while(!Panel::login());
 	};
 }
 
@@ -560,7 +596,7 @@ bool User::updateOneStudent(Student student)//学生只能修改自己的电话和生日，老师
 {
 	if (nowUser.getRole() == 0) {
 		// 如果是学生，只能修改自己的电话和生日
-		for (auto& s : allStudengs) {
+		for (auto& s : allStudents) {
 			if (s.getId() == student.getId()) {
 				if (s.getId() != nowUser.getAccount()) {
 					cout << "您只能修改自己的信息" << endl;
@@ -577,7 +613,7 @@ bool User::updateOneStudent(Student student)//学生只能修改自己的电话和生日，老师
 	}
 	else if (nowUser.getRole() == 1) {
 		// 如果是老师，可以修改任意学生任意信息
-		for (auto& s : allStudengs) {
+		for (auto& s : allStudents) {
 			if (s.getId() == student.getId()) {
 				s.setName(student.getName());
 				s.setSex(student.getSex());
@@ -617,7 +653,13 @@ bool User::showOneUser(string account)
 
 bool User::showAllUser()//查看所有用户信息
 {
-	Panel::showUser(allUser);
+	if (role != 1) {
+		Panel::error("您的权限不足！");
+		return false;
+	}
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ Panel::showUser(FileUtil::loadAllUser()) }) << endl;
+	Panel::pause();
 	return true;
 }
 
@@ -672,60 +714,91 @@ bool User::updateOneUser(User user) {
 
 bool User::showMyself()//在学生表中检索now_user账号，如果检索到显示改学生信息
 {
-	for (auto& student : allStudengs) {
+	if (role != 0) {
+		Panel::error("您的权限不足！");
+		return false;
+	}
+	for (auto& student : FileUtil::loadAllStudent()) {
 		if (student.getId() == nowUser.getAccount()) {
 			list<Student> tempList;
 			tempList.push_back(student);
-			Panel::showStudent(tempList);
+			cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(tempList) }) << endl;
+			Panel::pause();
 			return true;
 		}
 	}
-	cout << "无当前用户信息" << endl;
+	Panel::error("无当前用户信息！");
 	return false;
 }
 
 
-bool User::showOneStudent(string id)//老师可以查看一个学生信息
+bool User::showOneStudent()//老师可以查看一个学生信息
 {
-	for (auto& student : allStudengs) {
+	system("cls");
+
+	if (role != 1) {
+		Panel::error("您的权限不足！");
+		return false;
+	}
+	cout << "请输入想要查询的学号：" << endl;
+	string id;
+	cin >> id;
+	for (auto& student : FileUtil::loadAllStudent()) {
 		if (student.getId() == id) {
 			list<Student> tempList;
 			tempList.push_back(student);
-			Panel::showStudent(tempList);
+			cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(tempList) }) << endl;
+			Panel::pause();
 			return true;
 		}
 	}
-	cout << "学号不存在" << endl;
+	Panel::error("学号不存在！");
 	return false;
 }
 
 bool User::showAllStudent()//老师可以查看所有学生信息
 {
-	Panel::showStudent(allStudengs);
+	if (role != 1) {
+		Panel::error("您的权限不足！");
+		return false;
+	}
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(FileUtil::loadAllStudent()) }) << endl;
+	Panel::pause();
 	return true;
 }
 
 bool User::addOneStudent(Student student)//老师可以增加一个学生
 {
-	for (auto& s : allStudengs) {
+	for (auto& s : allStudents) {
 		if (s.getId() == student.getId()) {
 			cout << "学号已存在" << endl;
 			return false;
 		}
 	}
-	allStudengs.push_back(student);
+	allStudents.push_back(student);
 	return true;
 }
 
-bool User::deleteOneStudent(string id)//老师可以删除一个学生
+bool User::deleteOneStudent()//老师可以删除一个学生
 {
-	for (auto it = allStudengs.begin(); it != allStudengs.end(); ++it) {
+	if (role != 1) {
+		Panel::error("您的权限不足！");
+		return false;
+	}
+	cout << "请输入想要删除的学生学号：" << endl;
+	string id;
+	cin >> id;
+	list<Student> tempList = FileUtil::loadAllStudent();
+	for (auto it = tempList.begin(); it != tempList.end(); ++it) {
 		if (it->getId() == id) {
-			allStudengs.erase(it);
+			tempList.erase(it);
+			FileUtil::saveAllStudent(tempList);
+			Panel::success("删除成功！");
 			return true;
 		}
 	}
-	cout << "学号不存在" << endl;
+	Panel::error("学号不存在！");
 	return false;
 }
 
@@ -891,6 +964,5 @@ int main() {
 	
 	Panel::menu();
 
-	system("pause");
 	return 0;
 }
