@@ -141,9 +141,26 @@ private:
 	inline static void pause(string message="系统温馨提示：输入任意键以继续...") {
 		cout << message << endl;
 		string input_temp;
-		getchar();
 		getline(cin, input_temp);
 	};
+	inline static string inputWithSecret() {
+		string secret;
+		char ch = _getch();
+		while (ch != '\r') {
+			if (ch == 8) {
+				if (!secret.empty()) {
+					secret.pop_back();
+					cout << "\b \b";
+				}
+			}
+			else {
+				secret.push_back(ch);
+				cout << '*';
+			}
+			ch = _getch();
+		}
+		return secret;
+	}
 public:
 	static void loading(string) ;//通用加载页面
 	static void menu();//主界面
@@ -442,20 +459,7 @@ bool Panel::login() {
 	cout << outer_frame << endl;
 
 	cout<< "请输入您的密码：" << endl;
-	char ch = _getch();
-	while (ch != '\r') {
-		if (ch == 8) {
-			if (!password.empty()) {
-				password.pop_back();
-				cout << "\b \b";
-			}
-		}
-		else {
-			password.push_back(ch);
-			cout << '*';
-		}
-		ch = _getch();
-	}
+	password = Panel::inputWithSecret();
 
 	system("cls");
 	account_frame.add_row({ "密码：" + password })
