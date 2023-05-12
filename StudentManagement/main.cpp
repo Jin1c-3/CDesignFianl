@@ -135,12 +135,22 @@ public:
 
 class Panel
 {
+private:
+	static Table getStdOuterFrame();
+	static Table getStdInnerFrame();
+	inline static void pause(string message="系统温馨提示：输入任意键以继续...") {
+		cout << message << endl;
+		string input_temp;
+		getchar();
+		getline(cin, input_temp);
+	};
 public:
-	static void loading();//通用加载页面
+	static void loading(string) ;//通用加载页面
 	static void menu();//主界面
-	static void login();//登陆的可视化界面
+	static bool login();//登陆的可视化界面
 	static void signUp();//注册教师的可视化界面
-	static void error();//通用错误页面
+	static void error(string);//通用错误页面
+	static void success(string);//通用成功页面
 	static void studentOperation(list<Student> students);//显示学生信息，同时包括更新、删除、增加的功能
 	static void studentOperation(Student student);//显示单个学生信息，同时包括更新电话的功能
 	static void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
@@ -294,8 +304,8 @@ void Panel::showUser(list<User> users) {
 		.font_background_color(Color::green)
 		.font_color(Color::blue);
 	//遍历所有行
-	for (auto& roe : table) {
-		roe.format().font_align(FontAlign::center);
+	for (auto& row : table) {
+		row.format().font_align(FontAlign::center);
 	}
 	//遍历第三列的所有单元格
 	for (auto& col_cell : table.column(2)) {
@@ -332,13 +342,106 @@ void Panel::showUser(list<User> users) {
 	cout << table << endl;
 }
 
-bool User::login()
-{
+void Panel::loading(string message="正在加载中>>>>>>") {
+	for (int i = 0; i < 16; i++) {
+		system("cls");
+
+		Table outer_frame = Panel::getStdOuterFrame();
+		Table inner_frame = Panel::getStdInnerFrame();
+		inner_frame
+			.format()
+			.width(50);
+		inner_frame.add_row({ message })
+			.format()
+			.font_color(Color::red);
+
+		string loading_strip = "OOO";
+		for (int j = 0; j < i; j++) {
+			loading_strip += "OOO";
+		}
+		inner_frame.add_row({ loading_strip })
+			.format()
+			.font_align(FontAlign::left);
+
+		outer_frame.add_row({ inner_frame });
+		cout << outer_frame << endl;
+
+		Sleep(100);
+	}
+	Sleep(200);
+
+	system("cls");
+}
+
+void Panel::error(string message = "发生错误！") {
+	system("cls");
+
+	Table outer_frame = Panel::getStdOuterFrame();
+	outer_frame
+		.format()
+		.font_color(Color::red);
+	outer_frame.add_row({ message });
+	cout << outer_frame << endl;
+
+	Panel::pause();
+
+	system("cls");
+}
+
+void Panel::success(string message = "操作成功！") {
+	system("cls");
+
+	Table outer_frame = Panel::getStdOuterFrame();
+	outer_frame
+		.format()
+		.font_color(Color::green);
+	outer_frame.add_row({ message });
+	cout << outer_frame << endl;
+
+	Panel::pause();
+
+	system("cls");
+}
+
+Table Panel::getStdOuterFrame() {
+	Table mainTable;
+	mainTable.add_row({ "学生信息管理系统" });
+	mainTable[0][0]
+		.format()
+		.font_align(FontAlign::center)
+		.font_style({ FontStyle::bold })
+		.font_background_color(Color::green)
+		.font_color(Color::grey);
+	return mainTable;
+}
+
+Table Panel::getStdInnerFrame() {
+	Table table;
+	table
+		.format()
+		.font_align(FontAlign::center);
+	return table;
+}
+
+bool Panel::login() {
+	Table outer_frame = Panel::getStdOuterFrame();
+
 	string account, password;
-	cout << "请输入账号：";
+	system("cls");
+	cout << "请输入您的账号：" << endl;
 	cin >> account;
 
-	cout << "请输入密码：";
+	system("cls");
+	Table account_frame = Panel::getStdInnerFrame();
+	account_frame.add_row({ "账号：" + account })
+		.format()
+		.width(50)
+		.font_align(FontAlign::left)
+		.font_color(Color::yellow);
+	outer_frame.add_row({ account_frame });
+	cout << outer_frame << endl;
+
+	cout<< "请输入您的密码：" << endl;
 	char ch = _getch();
 	while (ch != '\r') {
 		if (ch == 8) {
@@ -353,17 +456,40 @@ bool User::login()
 		}
 		ch = _getch();
 	}
-	cout << endl;
-	for (auto& user : allUser) {
+
+	system("cls");
+	account_frame.add_row({ "密码：" + password })
+		.format()
+		.font_color(Color::yellow);
+	outer_frame =Panel::getStdOuterFrame();
+	outer_frame.add_row({ account_frame });
+	cout << outer_frame << endl;
+
+	Panel::pause();
+
+	nowUser.setAccount(account);
+	nowUser.setPassword(password);
+
+	Panel::loading("正在登陆中...");
+
+	if (nowUser.login()) {
+		Panel::success("恭喜您成功登录！");
+		return true;
+	}
+	else {
+		Panel::error("请检查用户名或密码！");
+		return false;
+	}
+}
+
+bool User::login()
+{
+	for (auto& user : FileUtil::loadAllUser()) {
 		if (user.getAccount() == account && user.getPassword() == password) {
-			this->account = account;
-			this->password = password;
 			this->role = user.getRole();
 			return true;
 		}
 	}
-
-	cout << "账号或密码错误" << endl;
 	return false;
 }
 
@@ -724,6 +850,7 @@ int main() {
 	Student student("202100810120", "静京", "123456789012345633", "男", "12345678802", "2000-03");
 	nowUser.updateOneStudent(student);*/
 	
+	Panel::login();
 
 	system("pause");
 	return 0;
