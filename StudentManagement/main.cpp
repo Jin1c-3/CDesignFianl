@@ -140,8 +140,7 @@ private:
 	static Table getStdInnerFrame();
 	inline static void pause(string message="系统温馨提示：输入任意键以继续...") {
 		cout << message << endl;
-		string input_temp;
-		getline(cin, input_temp);
+		getchar();
 	};
 	inline static string inputWithSecret() {
 		string secret;
@@ -469,6 +468,7 @@ bool Panel::login() {
 	outer_frame.add_row({ account_frame });
 	cout << outer_frame << endl;
 
+	getchar();//防止pause() bug，不可以删除
 	Panel::pause();
 
 	nowUser.setAccount(account);
@@ -484,6 +484,41 @@ bool Panel::login() {
 		Panel::error("请检查用户名或密码！");
 		return false;
 	}
+}
+
+void Panel::menu() {
+	Table outer_frame = Panel::getStdOuterFrame();
+	Table inner_frame = Panel::getStdInnerFrame();
+	inner_frame.add_row({ "目录" });
+	inner_frame[0][0]
+		.format()
+		.background_color(Color::white)
+		.font_color(Color::blue)
+		.font_style({FontStyle::bold,FontStyle::underline})
+		.width(50);
+
+	short login_role_state = nowUser.getRole();
+
+	if (login_role_state == 1) {
+		cout << "老师登陆成功" << endl;
+		return;
+	}
+	else if (login_role_state == 0) {
+		cout << "学生登陆成功" << endl;
+		return;
+	}
+	inner_frame.add_row({ "请先登录" });
+	outer_frame.add_row({ inner_frame });
+	cout << outer_frame << endl;
+
+	Panel::pause("输入任意键以登录...");
+
+	if (Panel::login()) {
+		Panel::menu();
+	}
+	else {
+		Panel::login();
+	};
 }
 
 bool User::login()
@@ -854,7 +889,7 @@ int main() {
 	Student student("202100810120", "静京", "123456789012345633", "男", "12345678802", "2000-03");
 	nowUser.updateOneStudent(student);*/
 	
-	Panel::login();
+	Panel::menu();
 
 	system("pause");
 	return 0;
