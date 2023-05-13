@@ -9,6 +9,7 @@
 #include <sstream>
 #include <conio.h>
 #include "tabulate/table.hpp"
+#include <regex>
 
 using namespace tabulate;
 using namespace std;
@@ -58,7 +59,7 @@ public:
 	//老师的权限
 	bool showOneStudent();//老师可以查看一个学生信息
 	bool showAllStudent();//老师可以查看所有学生信息
-	bool addOneStudent(Student student);//老师可以增加一个学生
+	bool addOneStudent();//老师可以增加一个学生
 	bool deleteOneStudent();//老师可以删除一个学生
 	bool signUp();//只有拥有管理员账号和密码的老师可以注册新老师
 };
@@ -131,6 +132,7 @@ public:
 	static list<User> loadAllUser();//加载所有用户
 	static bool saveAllUser(list<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
 	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
+	static bool verifyStudent(Student student);
 };
 
 class Panel
@@ -170,7 +172,7 @@ public:
 	static void error(string);//通用错误页面
 	static void success(string);//通用成功页面
 	// static void studentOperation();//显示学生信息，根据当前用户角色不同显示不同功能，学生可以更新自己的生日和电话，教师同时包括更新、删除、增加的功能
-	static void addOneStudnet();
+	static void addOneStudent();
 	static void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
 	static Table showStudent(list<Student> const& students);//只负责显示学生信息的表格，其他一概不管
 	static Table showStudent(Student const& student);//只负责显示单个学生信息的表格，其他一概不管
@@ -557,8 +559,8 @@ void Panel::menu() {
 			Panel::menu();
 		}
 		else if (command == "8") {
-			Panel::addOneStudnet();
-			menu();
+			nowUser.addOneStudent();
+			Panel::menu();
 		}
 		else {
 			Panel::success("感谢您的使用和信赖！");
@@ -574,44 +576,80 @@ void Panel::menu() {
 
 	Panel::pause("按任意键以登录...");
 
-	if (Panel::login()) {
-		Panel::menu();
-	}
-	else {
+
 		while(!Panel::login());
 		Panel::menu();
-	};
 }
 
-void Panel::addOneStudnet()
+void Panel::addOneStudent()
 {
 	system("cls");
-	allStudents = FileUtil::loadAllStudent();
-	allUser = FileUtil::loadAllUser();
 
-	if (nowUser.getRole() == 0){
-		Panel::error("您无权添加学生");
-		return;	
-	}
-	
-	string id, name, identifyID, sex, phone, birthday;
+	string id, name, identityID, sex, phone, birthday;
 	cout << "请输入学号：";
 	cin >> id;
 	cout << "请输入姓名：";
 	cin >> name;
 	cout << "请输入身份证号：";
-	cin >> identifyID;
+	cin >> identityID;
 	cout << "请输入性别（男/女）：";
 	cin >> sex;
 	cout << "请输入电话号码：";
 	cin >> phone;
 	cout << "请输入生日（xxxx-xx-xx）：";
 	cin >> birthday;
-	Student newStudent(id, name, identifyID, sex, phone, birthday);
-	nowUser.addOneStudent(newStudent);
 
-	FileUtil::saveAllStudent(allStudents);
-	FileUtil::saveAllUser(allUser);
+	if (regex id_reg("^\\d{12}$"); !regex_match(id, id_reg)) {
+		Panel::error("学号格式错误");
+		Panel::addOneStudent();
+		return;
+	}
+
+	if (regex identity_id_reg("^([1-6][1-9]|50)\\d{4}(18|19|20)\\d{2}((0[1-9])|10|11|12)(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$"); !regex_match(identityID, identity_id_reg)) {
+		Panel::error("身份证号格式错误");
+		Panel::addOneStudent();
+		return;
+	}
+	
+	if (regex sex_reg("^(男|女){1}$"); !regex_match(sex, sex_reg)) {
+		Panel::error("性别输入错误");
+		Panel::addOneStudent();
+		return;
+	}
+
+	if (regex phone_reg("^1(3|4|5|7|8)\\d{9}$"); !regex_match(phone, phone_reg)) {
+		Panel::error("手机号格式错误");
+		Panel::addOneStudent();
+		return;
+	}
+
+	if (regex birthday_reg("^\\d{4}-\\d{2}-\\d{2}$"); !regex_match(birthday, birthday_reg)) {
+		Panel::error("日期格式错误");
+		Panel::addOneStudent();
+		return;
+	}
+
+	for (auto& s : FileUtil::loadAllStudent()) {
+		if (s.getId() == id) {
+			Panel::error("学号已存在");
+			Panel::addOneStudent();
+			return;
+		}
+		if (s.getIdentityId() == identityID) {
+			Panel::error("身份证号已存在");
+			Panel::addOneStudent();
+			return;
+		}
+	}
+
+	list<Student>student_list= FileUtil::loadAllStudent();
+	student_list.push_back(Student(id, name, identityID, sex, phone, birthday));
+
+	list<User>user_list = FileUtil::loadAllUser();
+	user_list.push_back(User(id, identityID.substr(12), 0));
+
+	FileUtil::saveAllStudent(student_list);
+	FileUtil::saveAllUser(user_list);
 }
  
 bool User::login()
@@ -833,16 +871,15 @@ bool User::showAllStudent()//老师可以查看所有学生信息
 	return true;
 }
 
-bool User::addOneStudent(Student student)//老师可以增加一个学生
+bool User::addOneStudent()//老师可以增加一个学生
 {
-	for (auto& s : allStudents) {
-		if (s.getId() == student.getId()) {
-			Panel::error("学号已存在");
-			return false;
-		}
+	if (role != 1) {
+		Panel::error("您的权限不足！");
+		return false;
 	}
-	allStudents.push_back(student);
-	Panel::success("添加学生成功");
+	system("cls");
+	Panel::addOneStudent();
+	Panel::success("学生添加成功！");
 	return true;
 }
 
