@@ -715,7 +715,7 @@ bool User::updateOneUser(User user) {
 bool User::showMyself()//在学生表中检索now_user账号，如果检索到显示改学生信息
 {
 	if (role != 0) {
-		Panel::error("您的权限不足！");
+		Panel::error("您不是学生，无学生信息");
 		return false;
 	}
 	for (auto& student : FileUtil::loadAllStudent()) {
@@ -782,6 +782,8 @@ bool User::addOneStudent(Student student)//老师可以增加一个学生
 
 bool User::deleteOneStudent()//老师可以删除一个学生
 {
+	system("cls");
+
 	if (role != 1) {
 		Panel::error("您的权限不足！");
 		return false;
