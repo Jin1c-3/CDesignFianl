@@ -165,11 +165,12 @@ public:
 	static void loading(string) ;//通用加载页面
 	static void menu();//主界面
 	static bool login();//登陆的可视化界面
+	static void updateOneUser(User user);
 	static void signUp();//注册教师的可视化界面
 	static void error(string);//通用错误页面
 	static void success(string);//通用成功页面
-	static void studentOperation(list<Student> students);//显示学生信息，同时包括更新、删除、增加的功能
-	static void studentOperation(Student student);//显示单个学生信息，同时包括更新电话的功能
+	// static void studentOperation();//显示学生信息，根据当前用户角色不同显示不同功能，学生可以更新自己的生日和电话，教师同时包括更新、删除、增加的功能
+	static void addOneStudnet();
 	static void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
 	static Table showStudent(list<Student> const& students);//只负责显示学生信息的表格，其他一概不管
 	static Table showStudent(Student const& student);//只负责显示单个学生信息的表格，其他一概不管
@@ -486,6 +487,14 @@ bool Panel::login() {
 	}
 }
 
+void Panel::signUp() {
+	nowUser.signUp();
+}
+
+void Panel::updateOneUser(User user) {
+	nowUser.updateOneUser(user);
+}
+
 void Panel::menu() {
 	system("cls");
 
@@ -508,6 +517,10 @@ void Panel::menu() {
 		inner_frame.add_row({ "3.查看自己的学生信息" });
 		inner_frame.add_row({ "4.输入学号查找一位同学" });
 		inner_frame.add_row({ "5.输入学号删除一位同学" });
+		inner_frame.add_row({ "6.注册教师账号" });
+		inner_frame.add_row({ "7.修改账号密码" });
+		inner_frame.add_row({ "8.添加一个学生" });
+		inner_frame.add_row({ "输入其余自动退出" });
 
 		outer_frame.add_row({ inner_frame });
 
@@ -535,6 +548,18 @@ void Panel::menu() {
 			nowUser.deleteOneStudent();
 			Panel::menu();
 		}
+		else if (command == "6") {
+			Panel::signUp();
+			Panel::menu();
+		}
+		else if (command == "7") {
+			Panel::updateOneUser(nowUser);
+			Panel::menu();
+		}
+		else if (command == "8") {
+			Panel::addOneStudnet();
+			menu();
+		}
 		else {
 			Panel::success("感谢您的使用和信赖！");
 		}
@@ -558,6 +583,37 @@ void Panel::menu() {
 	};
 }
 
+void Panel::addOneStudnet()
+{
+	system("cls");
+	allStudents = FileUtil::loadAllStudent();
+	allUser = FileUtil::loadAllUser();
+
+	if (nowUser.getRole() == 0){
+		Panel::error("您无权添加学生");
+		return;	
+	}
+	
+	string id, name, identifyID, sex, phone, birthday;
+	cout << "请输入学号：";
+	cin >> id;
+	cout << "请输入姓名：";
+	cin >> name;
+	cout << "请输入身份证号：";
+	cin >> identifyID;
+	cout << "请输入性别（男/女）：";
+	cin >> sex;
+	cout << "请输入电话号码：";
+	cin >> phone;
+	cout << "请输入生日（xxxx-xx-xx）：";
+	cin >> birthday;
+	Student newStudent(id, name, identifyID, sex, phone, birthday);
+	nowUser.addOneStudent(newStudent);
+
+	FileUtil::saveAllStudent(allStudents);
+	FileUtil::saveAllUser(allUser);
+}
+ 
 bool User::login()
 {
 	for (auto& user : FileUtil::loadAllUser()) {
@@ -600,16 +656,16 @@ bool User::updateOneStudent(Student student)//学生只能修改自己的电话和生日，老师
 		for (auto& s : allStudents) {
 			if (s.getId() == student.getId()) {
 				if (s.getId() != nowUser.getAccount()) {
-					cout << "您只能修改自己的信息" << endl;
+					Panel::error("您只能修改自己的信息");
 					return false;
 				}
 				s.setPhone(student.getPhone());
 				s.setBirthday(student.getBirthday());
-				cout << "修改成功" << endl;
+				Panel::success("修改成功");
 				return true;
 			}
 		}
-		cout << "学号不存在" << endl;
+		Panel::error("学号不存在");
 		return false;
 	}
 	else if (nowUser.getRole() == 1) {
@@ -621,16 +677,16 @@ bool User::updateOneStudent(Student student)//学生只能修改自己的电话和生日，老师
 				s.setPhone(student.getPhone());
 				s.setBirthday(student.getBirthday());
 				s.setAge(student.getAge());
-				cout << "修改成功" << endl;
+				Panel::success("修改成功");
 				return true;
 			}
 		}
-		cout << "学号不存在" << endl;
+		Panel::error("学号不存在");
 		return false;
 	}
 	else {
 		// 如果是其他用户，无权修改
-		cout << "您无权修改" << endl;
+		Panel::error("您无权修改");;
 		return false;
 	}
 }
@@ -666,6 +722,10 @@ bool User::showAllUser()//查看所有用户信息
 
 //修改用户密码
 bool User::updateOneUser(User user) {
+	system("cls");
+	allStudents = FileUtil::loadAllStudent();
+	allUser = FileUtil::loadAllUser();
+	
     for (auto& u : allUser) {
         if (u.getAccount() == user.getAccount()) {
             // 要求用户输入原密码
@@ -686,7 +746,7 @@ bool User::updateOneUser(User user) {
             }
             cout << endl;
             if (old_password != u.getPassword()) {
-                cout << "密码错误" << endl;
+				Panel::error("密码错误");
                 return false;
             }
             // 要求用户输入新密码
@@ -706,10 +766,14 @@ bool User::updateOneUser(User user) {
             }
             cout << endl;
             u.setPassword(new_password);
+			
+			FileUtil::saveAllStudent(allStudents);
+			FileUtil::saveAllUser(allUser);
+			Panel::success("密码修改成功");
             return true;
         }
     }
-    cout << "账号不存在" << endl;
+	Panel::error("账号不存在");
     return false;
 }
 
@@ -773,11 +837,12 @@ bool User::addOneStudent(Student student)//老师可以增加一个学生
 {
 	for (auto& s : allStudents) {
 		if (s.getId() == student.getId()) {
-			cout << "学号已存在" << endl;
+			Panel::error("学号已存在");
 			return false;
 		}
 	}
 	allStudents.push_back(student);
+	Panel::success("添加学生成功");
 	return true;
 }
 
@@ -807,6 +872,10 @@ bool User::deleteOneStudent()//老师可以删除一个学生
 
 //输入指定管理员账号（admin）和密码(admin)，之后可以注册新老师
 bool User::signUp() {
+	system("cls");
+	allStudents = FileUtil::loadAllStudent();
+	allUser = FileUtil::loadAllUser();
+
 	// 输入管理员账号和密码
 	string admin_account = "admin";
 	string admin_password = "admin";
@@ -833,6 +902,8 @@ bool User::signUp() {
 
 	// 判断输入的账号和密码是否正确
 	if (admin_account == input_account && admin_password == input_password) {
+		Panel::success("恭喜您成功登录！");
+		
 		// 输入新老师的账号和密码
 		string new_account, new_password;
 		cout << "请输入新的教师账号： ";
@@ -857,7 +928,7 @@ bool User::signUp() {
 		// 检查是否存在相同的账号
 		for (auto& u : allUser) {
 			if (u.getAccount() == new_account) {
-				cout << "账号已存在" << endl;
+				Panel::error("账号已存在");
 				return false;
 			}
 		}
@@ -865,13 +936,16 @@ bool User::signUp() {
 		User new_teacher(new_account, new_password, 1);
 		allUser.push_back(new_teacher);
 		FileUtil::saveAllUser(allUser);
-		cout << "新老师已添加" << endl;
+		Panel::success("新教师账号创建成功");
 		return true;
 	}
 	else {
-		cout << "管理员账号或密码错误" << endl;
+		Panel::error("管理员账号或密码错误");
 		return false;
 	}
+
+	FileUtil::saveAllStudent(allStudents);
+	FileUtil::saveAllUser(allUser);
 }
 
 int main() {
@@ -965,6 +1039,9 @@ int main() {
 	Student student("202100810120", "静京", "123456789012345633", "男", "12345678802", "2000-03");
 	nowUser.updateOneStudent(student);*/
 	
+	nowUser.setAccount("111");
+	nowUser.setPassword("111");
+	nowUser.setRole(1);
 	Panel::menu();
 
 	return 0;
