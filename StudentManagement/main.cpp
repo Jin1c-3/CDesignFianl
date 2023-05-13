@@ -125,14 +125,14 @@ public:
 	//methods
 };
 
-class FileUtil
+class Util
 {
 public:
 	static list<Student> loadAllStudent();//加载所有学生
 	static list<User> loadAllUser();//加载所有用户
 	static bool saveAllUser(list<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
 	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
-	static bool verifyStudent(Student student);
+	static bool verifyStudent(string id, string name, string identityId, string sex, string phone, string birthday);
 };
 
 class Panel
@@ -185,7 +185,7 @@ list<Student> shownStudents;//正在显示的学生列表
 list<User> allUser;//所有用户
 User nowUser("", "", -1);//当前登录的用户
 
-list<Student> FileUtil::loadAllStudent() {
+list<Student> Util::loadAllStudent() {
 	list<Student> students;
 	ifstream infile("student.txt");
 	if (!infile) {
@@ -211,7 +211,7 @@ list<Student> FileUtil::loadAllStudent() {
 }
 
 // 定义 saveAllStudent 函数
-bool FileUtil::saveAllStudent(list<Student> students) {
+bool Util::saveAllStudent(list<Student> students) {
 	ofstream outfile("student.txt");
 	if (!outfile) {
 		cerr << "Error opening file!" << endl;
@@ -225,7 +225,7 @@ bool FileUtil::saveAllStudent(list<Student> students) {
 }
 
 // 加载所有用户
-list<User> FileUtil::loadAllUser() {
+list<User> Util::loadAllUser() {
 	list<User> users;
 	ifstream infile("user.txt");
 	if (!infile) {
@@ -248,7 +248,7 @@ list<User> FileUtil::loadAllUser() {
 }
 
 // 保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
-bool FileUtil::saveAllUser(list<User> users) {
+bool Util::saveAllUser(list<User> users) {
 	ofstream outfile("user.txt");
 	if (!outfile) {
 		cerr << "Error opening file!" << endl;
@@ -581,80 +581,107 @@ void Panel::menu() {
 		Panel::menu();
 }
 
-void Panel::addOneStudent()
-{
-	system("cls");
-
-	string id, name, identityID, sex, phone, birthday;
-	cout << "请输入学号：";
-	cin >> id;
-	cout << "请输入姓名：";
-	cin >> name;
-	cout << "请输入身份证号：";
-	cin >> identityID;
-	cout << "请输入性别（男/女）：";
-	cin >> sex;
-	cout << "请输入电话号码：";
-	cin >> phone;
-	cout << "请输入生日（xxxx-xx-xx）：";
-	cin >> birthday;
-
+bool Util::verifyStudent(string id, string name, string identityId, string sex, string phone, string birthday) {
 	if (regex id_reg("^\\d{12}$"); !regex_match(id, id_reg)) {
 		Panel::error("学号格式错误");
-		Panel::addOneStudent();
-		return;
+		return false;
 	}
 
-	if (regex identity_id_reg("^([1-6][1-9]|50)\\d{4}(18|19|20)\\d{2}((0[1-9])|10|11|12)(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$"); !regex_match(identityID, identity_id_reg)) {
+	if (regex identity_id_reg("^([1-6][1-9]|50)\\d{4}(18|19|20)\\d{2}((0[1-9])|10|11|12)(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$"); !regex_match(identityId, identity_id_reg)) {
 		Panel::error("身份证号格式错误");
-		Panel::addOneStudent();
-		return;
+		return false;
 	}
-	
+
 	if (regex sex_reg("^(男|女){1}$"); !regex_match(sex, sex_reg)) {
 		Panel::error("性别输入错误");
-		Panel::addOneStudent();
-		return;
+		return false;
 	}
 
 	if (regex phone_reg("^1(3|4|5|7|8)\\d{9}$"); !regex_match(phone, phone_reg)) {
 		Panel::error("手机号格式错误");
-		Panel::addOneStudent();
-		return;
+		return false;
 	}
 
 	if (regex birthday_reg("^\\d{4}-\\d{2}-\\d{2}$"); !regex_match(birthday, birthday_reg)) {
 		Panel::error("日期格式错误");
+		return false;
+	}
+
+	return true;
+}
+
+void Panel::addOneStudent()
+{
+	system("cls");
+
+	Table inner_frame = Panel::getStdInnerFrame();
+	inner_frame
+		.format()
+		.font_align(FontAlign::left)
+		.width(50);
+
+	string id, name, identityId, sex, phone, birthday;
+	cout << "请输入学号：";
+	cin >> id;
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ inner_frame.add_row({"学号：" + id}) }) << endl;
+
+	cout << "请输入姓名：";
+	cin >> name;
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ inner_frame.add_row({"姓名：" + name }) }) << endl;
+
+	cout << "请输入身份证号：";
+	cin >> identityId;
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ inner_frame.add_row({"身份证号：" + identityId }) }) << endl;
+
+	cout << "请输入性别（男/女）：";
+	cin >> sex;
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ inner_frame.add_row({"性别：" + sex }) }) << endl;
+
+	cout << "请输入电话号码：";
+	cin >> phone;
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ inner_frame.add_row({"电话号码：" + phone }) }) << endl;
+
+	cout << "请输入生日（xxxx-xx-xx）：";
+	cin >> birthday;
+	system("cls");
+	cout << Panel::getStdOuterFrame().add_row({ inner_frame.add_row({"生日：" + birthday }) }) << endl;
+
+	if (!Util::verifyStudent(id, name, identityId, sex, phone, birthday)) {
 		Panel::addOneStudent();
 		return;
 	}
 
-	for (auto& s : FileUtil::loadAllStudent()) {
+	for (auto& s : Util::loadAllStudent()) {
 		if (s.getId() == id) {
 			Panel::error("学号已存在");
 			Panel::addOneStudent();
 			return;
 		}
-		if (s.getIdentityId() == identityID) {
+		if (s.getIdentityId() == identityId) {
 			Panel::error("身份证号已存在");
 			Panel::addOneStudent();
 			return;
 		}
 	}
 
-	list<Student>student_list= FileUtil::loadAllStudent();
-	student_list.push_back(Student(id, name, identityID, sex, phone, birthday));
+	list<Student>student_list= Util::loadAllStudent();
+	student_list.emplace_back(id, name, identityId, sex, phone, birthday);
 
-	list<User>user_list = FileUtil::loadAllUser();
-	user_list.push_back(User(id, identityID.substr(12), 0));
+	list<User>user_list = Util::loadAllUser();
+	user_list.emplace_back(id, identityId.substr(12), 0);
 
-	FileUtil::saveAllStudent(student_list);
-	FileUtil::saveAllUser(user_list);
+	Util::saveAllStudent(student_list);
+	Util::saveAllUser(user_list);
 }
  
 bool User::login()
 {
-	for (auto& user : FileUtil::loadAllUser()) {
+	for (auto& user : Util::loadAllUser()) {
 		if (user.getAccount() == account && user.getPassword() == password) {
 			this->role = user.getRole();
 			return true;
@@ -753,7 +780,7 @@ bool User::showAllUser()//查看所有用户信息
 		return false;
 	}
 	system("cls");
-	cout << Panel::getStdOuterFrame().add_row({ Panel::showUser(FileUtil::loadAllUser()) }) << endl;
+	cout << Panel::getStdOuterFrame().add_row({ Panel::showUser(Util::loadAllUser()) }) << endl;
 	Panel::pause();
 	return true;
 }
@@ -761,8 +788,8 @@ bool User::showAllUser()//查看所有用户信息
 //修改用户密码
 bool User::updateOneUser(User user) {
 	system("cls");
-	allStudents = FileUtil::loadAllStudent();
-	allUser = FileUtil::loadAllUser();
+	allStudents = Util::loadAllStudent();
+	allUser = Util::loadAllUser();
 	
     for (auto& u : allUser) {
         if (u.getAccount() == user.getAccount()) {
@@ -805,8 +832,8 @@ bool User::updateOneUser(User user) {
             cout << endl;
             u.setPassword(new_password);
 			
-			FileUtil::saveAllStudent(allStudents);
-			FileUtil::saveAllUser(allUser);
+			Util::saveAllStudent(allStudents);
+			Util::saveAllUser(allUser);
 			Panel::success("密码修改成功");
             return true;
         }
@@ -821,7 +848,7 @@ bool User::showMyself()//在学生表中检索now_user账号，如果检索到显示改学生信息
 		Panel::error("您不是学生，无学生信息");
 		return false;
 	}
-	for (auto& student : FileUtil::loadAllStudent()) {
+	for (auto& student : Util::loadAllStudent()) {
 		if (student.getId() == nowUser.getAccount()) {
 			list<Student> tempList;
 			tempList.push_back(student);
@@ -846,7 +873,7 @@ bool User::showOneStudent()//老师可以查看一个学生信息
 	cout << "请输入想要查询的学号：" << endl;
 	string id;
 	cin >> id;
-	for (auto& student : FileUtil::loadAllStudent()) {
+	for (auto& student : Util::loadAllStudent()) {
 		if (student.getId() == id) {
 			list<Student> tempList;
 			tempList.push_back(student);
@@ -866,7 +893,7 @@ bool User::showAllStudent()//老师可以查看所有学生信息
 		return false;
 	}
 	system("cls");
-	cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(FileUtil::loadAllStudent()) }) << endl;
+	cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(Util::loadAllStudent()) }) << endl;
 	Panel::pause();
 	return true;
 }
@@ -894,11 +921,11 @@ bool User::deleteOneStudent()//老师可以删除一个学生
 	cout << "请输入想要删除的学生学号：" << endl;
 	string id;
 	cin >> id;
-	list<Student> tempList = FileUtil::loadAllStudent();
+	list<Student> tempList = Util::loadAllStudent();
 	for (auto it = tempList.begin(); it != tempList.end(); ++it) {
 		if (it->getId() == id) {
 			tempList.erase(it);
-			FileUtil::saveAllStudent(tempList);
+			Util::saveAllStudent(tempList);
 			Panel::success("删除成功！");
 			return true;
 		}
@@ -910,8 +937,8 @@ bool User::deleteOneStudent()//老师可以删除一个学生
 //输入指定管理员账号（admin）和密码(admin)，之后可以注册新老师
 bool User::signUp() {
 	system("cls");
-	allStudents = FileUtil::loadAllStudent();
-	allUser = FileUtil::loadAllUser();
+	allStudents = Util::loadAllStudent();
+	allUser = Util::loadAllUser();
 
 	// 输入管理员账号和密码
 	string admin_account = "admin";
@@ -972,7 +999,7 @@ bool User::signUp() {
 		// 添加新老师
 		User new_teacher(new_account, new_password, 1);
 		allUser.push_back(new_teacher);
-		FileUtil::saveAllUser(allUser);
+		Util::saveAllUser(allUser);
 		Panel::success("新教师账号创建成功");
 		return true;
 	}
@@ -981,8 +1008,8 @@ bool User::signUp() {
 		return false;
 	}
 
-	FileUtil::saveAllStudent(allStudents);
-	FileUtil::saveAllUser(allUser);
+	Util::saveAllStudent(allStudents);
+	Util::saveAllUser(allUser);
 }
 
 int main() {
