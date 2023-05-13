@@ -554,6 +554,7 @@ void Panel::menu() {
 	}
 	else {
 		while(!Panel::login());
+		Panel::menu();
 	};
 }
 
