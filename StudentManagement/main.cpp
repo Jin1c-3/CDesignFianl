@@ -2,7 +2,7 @@
 
 #include<iostream>
 #include<string>
-#include<list>
+#include<vector>
 #include<ctime>
 #include <fstream>
 #include <iostream>
@@ -128,10 +128,10 @@ public:
 class Util
 {
 public:
-	static list<Student> loadAllStudent();//加载所有学生
-	static list<User> loadAllUser();//加载所有用户
-	static bool saveAllUser(list<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
-	static bool saveAllStudent(list<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
+	static vector<Student> loadAllStudent();//加载所有学生
+	static vector<User> loadAllUser();//加载所有用户
+	static bool saveAllUser(vector<User> users);//保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
+	static bool saveAllStudent(vector<Student> students);//保存所有学生，采用覆盖的方式实现，方便修改、删除操作的实现
 	static bool verifyStudent(string id, string name, string identityId, string sex, string phone, string birthday);
 };
 
@@ -173,20 +173,20 @@ public:
 	static void success(string);//通用成功页面
 	// static void studentOperation();//显示学生信息，根据当前用户角色不同显示不同功能，学生可以更新自己的生日和电话，教师同时包括更新、删除、增加的功能
 	static void addOneStudent();
-	static void userOperation(list<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
-	static Table showStudent(list<Student> const& students);//只负责显示学生信息的表格，其他一概不管
+	static void userOperation(vector<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
+	static Table showStudent(vector<Student> const& students);//只负责显示学生信息的表格，其他一概不管
 	static Table showStudent(Student const& student);//只负责显示单个学生信息的表格，其他一概不管
-	static Table showUser(list<User> users);//只负责显示用户信息的表格，其他一概不管
+	static Table showUser(vector<User> users);//只负责显示用户信息的表格，其他一概不管
 };
 
 //global variables
-list<Student> allStudents;//所有学生
-list<Student> shownStudents;//正在显示的学生列表
-list<User> allUser;//所有用户
+vector<Student> allStudents;//所有学生
+vector<Student> shownStudents;//正在显示的学生列表
+vector<User> allUser;//所有用户
 User nowUser("", "", -1);//当前登录的用户
 
-list<Student> Util::loadAllStudent() {
-	list<Student> students;
+vector<Student> Util::loadAllStudent() {
+	vector<Student> students;
 	ifstream infile("student.txt");
 	if (!infile) {
 		cerr << "Error opening file!" << endl;
@@ -211,7 +211,7 @@ list<Student> Util::loadAllStudent() {
 }
 
 // 定义 saveAllStudent 函数
-bool Util::saveAllStudent(list<Student> students) {
+bool Util::saveAllStudent(vector<Student> students) {
 	ofstream outfile("student.txt");
 	if (!outfile) {
 		cerr << "Error opening file!" << endl;
@@ -225,8 +225,8 @@ bool Util::saveAllStudent(list<Student> students) {
 }
 
 // 加载所有用户
-list<User> Util::loadAllUser() {
-	list<User> users;
+vector<User> Util::loadAllUser() {
+	vector<User> users;
 	ifstream infile("user.txt");
 	if (!infile) {
 		cerr << "Error opening file!" << endl;
@@ -248,7 +248,7 @@ list<User> Util::loadAllUser() {
 }
 
 // 保存所有用户，采用覆盖的方式实现，方便修改、删除操作的实现
-bool Util::saveAllUser(list<User> users) {
+bool Util::saveAllUser(vector<User> users) {
 	ofstream outfile("user.txt");
 	if (!outfile) {
 		cerr << "Error opening file!" << endl;
@@ -261,7 +261,7 @@ bool Util::saveAllUser(list<User> users) {
 	return true;
 }
 
-Table Panel::showStudent(list<Student> const& students) {
+Table Panel::showStudent(vector<Student> const& students) {
 	Table table;
 	table.add_row({ "学号","姓名","身份证号","性别","电话","生日","年龄" });
 	for (auto student : students) {
@@ -307,11 +307,11 @@ Table Panel::showStudent(list<Student> const& students) {
 }
 
 Table Panel::showStudent(Student const& student) {
-	list<Student>temp = { student };
+	vector<Student>temp = { student };
 	return showStudent(temp);
 }
 
-Table Panel::showUser(list<User> users) {
+Table Panel::showUser(vector<User> users) {
 	Table table;
 	table.add_row({ "账号","密码","权限" });
 	for (auto user : users) {
@@ -497,6 +497,14 @@ void Panel::updateOneUser(User user) {
 	nowUser.updateOneUser(user);
 }
 
+bool cmpByStudentAge(Student& a, Student& b) {
+	return a.getAge() < b.getAge();
+}
+
+bool cmpByStudentId(Student& a, Student& b) {
+	return a.getId() < b.getId();
+}
+
 void Panel::menu() {
 	system("cls");
 
@@ -522,6 +530,8 @@ void Panel::menu() {
 		inner_frame.add_row({ "6.注册教师账号" });
 		inner_frame.add_row({ "7.修改账号密码" });
 		inner_frame.add_row({ "8.添加一个学生" });
+		inner_frame.add_row({ "9.按照年龄排序查看所有学生" });
+		inner_frame.add_row({ "10.按照学号排序查看所有学生" });
 		inner_frame.add_row({ "输入其余自动退出" });
 
 		outer_frame.add_row({ inner_frame });
@@ -562,6 +572,18 @@ void Panel::menu() {
 			nowUser.addOneStudent();
 			Panel::menu();
 		}
+		else if (command == "9") {
+			allStudents = Util::loadAllStudent();
+			sort(allStudents.begin(), allStudents.end(), cmpByStudentAge);
+			nowUser.showAllStudent();
+			Panel::menu();
+		}
+		else if (command == "10") {
+			allStudents = Util::loadAllStudent();
+			sort(allStudents.begin(), allStudents.end(), cmpByStudentId);
+			nowUser.showAllStudent();
+			Panel::menu();
+		}
 		else {
 			Panel::success("感谢您的使用和信赖！");
 		}
@@ -576,10 +598,10 @@ void Panel::menu() {
 
 	Panel::pause("按任意键以登录...");
 
-
-		while(!Panel::login());
-		Panel::menu();
+	while (!Panel::login());
+	Panel::menu();
 }
+
 
 bool Util::verifyStudent(string id, string name, string identityId, string sex, string phone, string birthday) {
 	if (regex id_reg("^\\d{12}$"); !regex_match(id, id_reg)) {
@@ -669,14 +691,14 @@ void Panel::addOneStudent()
 		}
 	}
 
-	list<Student>student_list= Util::loadAllStudent();
-	student_list.emplace_back(id, name, identityId, sex, phone, birthday);
+	vector<Student>student_vector= Util::loadAllStudent();
+	student_vector.emplace_back(id, name, identityId, sex, phone, birthday);
 
-	list<User>user_list = Util::loadAllUser();
-	user_list.emplace_back(id, identityId.substr(12), 0);
+	vector<User>user_vector = Util::loadAllUser();
+	user_vector.emplace_back(id, identityId.substr(12), 0);
 
-	Util::saveAllStudent(student_list);
-	Util::saveAllUser(user_list);
+	Util::saveAllStudent(student_vector);
+	Util::saveAllUser(user_vector);
 }
  
 bool User::login()
@@ -763,9 +785,9 @@ bool User::showOneUser(string account)
 	{
         if (user.getAccount() == account)
 		{ 
-			list<User> tempList;
-			tempList.push_back(user);
-			Panel::showUser(tempList);
+			vector<User> tempvector;
+			tempvector.push_back(user);
+			Panel::showUser(tempvector);
 			return true;
 		}
     }
@@ -850,9 +872,9 @@ bool User::showMyself()//在学生表中检索now_user账号，如果检索到显示改学生信息
 	}
 	for (auto& student : Util::loadAllStudent()) {
 		if (student.getId() == nowUser.getAccount()) {
-			list<Student> tempList;
-			tempList.push_back(student);
-			cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(tempList) }) << endl;
+			vector<Student> tempvector;
+			tempvector.push_back(student);
+			cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(tempvector) }) << endl;
 			Panel::pause();
 			return true;
 		}
@@ -875,9 +897,9 @@ bool User::showOneStudent()//老师可以查看一个学生信息
 	cin >> id;
 	for (auto& student : Util::loadAllStudent()) {
 		if (student.getId() == id) {
-			list<Student> tempList;
-			tempList.push_back(student);
-			cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(tempList) }) << endl;
+			vector<Student> tempvector;
+			tempvector.push_back(student);
+			cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(tempvector) }) << endl;
 			Panel::pause();
 			return true;
 		}
@@ -893,7 +915,7 @@ bool User::showAllStudent()//老师可以查看所有学生信息
 		return false;
 	}
 	system("cls");
-	cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(Util::loadAllStudent()) }) << endl;
+	cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(allStudents) }) << endl;
 	Panel::pause();
 	return true;
 }
@@ -921,11 +943,11 @@ bool User::deleteOneStudent()//老师可以删除一个学生
 	cout << "请输入想要删除的学生学号：" << endl;
 	string id;
 	cin >> id;
-	list<Student> tempList = Util::loadAllStudent();
-	for (auto it = tempList.begin(); it != tempList.end(); ++it) {
+	vector<Student> tempvector = Util::loadAllStudent();
+	for (auto it = tempvector.begin(); it != tempvector.end(); ++it) {
 		if (it->getId() == id) {
-			tempList.erase(it);
-			Util::saveAllStudent(tempList);
+			tempvector.erase(it);
+			Util::saveAllStudent(tempvector);
 			Panel::success("删除成功！");
 			return true;
 		}
