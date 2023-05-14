@@ -1125,6 +1125,9 @@ int main() {
 	Student student("202100810120", "¾²¾©", "123456789012345633", "ÄÐ", "12345678802", "2000-03");
 	nowUser.updateOneStudent(student);*/
 	
+	allStudents = Util::loadAllStudent();
+	allUser = Util::loadAllUser();
+
 	nowUser.setAccount("111");
 	nowUser.setPassword("111");
 	nowUser.setRole(1);
