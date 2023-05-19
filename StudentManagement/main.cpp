@@ -173,7 +173,7 @@ public:
 	static void success(string);//通用成功页面
 	// static void studentOperation();//显示学生信息，根据当前用户角色不同显示不同功能，学生可以更新自己的生日和电话，教师同时包括更新、删除、增加的功能
 	static void addOneStudent();
-	static void userOperation(vector<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
+	//static void userOperation(vector<User> users);//显示用户信息，同时包括更新、删除、增加的功能。只有拥有管理员账号密码的老师可以进入
 	static Table showStudent(vector<Student> const& students);//只负责显示学生信息的表格，其他一概不管
 	static Table showStudent(Student const& student);//只负责显示单个学生信息的表格，其他一概不管
 	static Table showUser(vector<User> users);//只负责显示用户信息的表格，其他一概不管
@@ -231,7 +231,7 @@ vector<User> Util::loadAllUser() {
 	if (!infile) {
 		cerr << "Error opening file!" << endl;
 		return users;
-	}
+	} 
 	string line;
 	while (getline(infile, line)) {
 		istringstream iss(line);
@@ -866,6 +866,7 @@ bool User::updateOneUser(User user) {
 
 bool User::showMyself()//在学生表中检索now_user账号，如果检索到显示改学生信息
 {
+	system("cls");
 	if (role != 0) {
 		Panel::error("您不是学生，无学生信息");
 		return false;
@@ -915,7 +916,7 @@ bool User::showAllStudent()//老师可以查看所有学生信息
 		return false;
 	}
 	system("cls");
-	cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(allStudents) }) << endl;
+	cout << Panel::getStdOuterFrame().add_row({ Panel::showStudent(Util::loadAllStudent()) }) << endl;
 	Panel::pause();
 	return true;
 }
@@ -959,6 +960,12 @@ bool User::deleteOneStudent()//老师可以删除一个学生
 //输入指定管理员账号（admin）和密码(admin)，之后可以注册新老师
 bool User::signUp() {
 	system("cls");
+
+	if (role != 1) {
+		Panel::error("您的权限不足！");
+		return false;
+	}
+
 	allStudents = Util::loadAllStudent();
 	allUser = Util::loadAllUser();
 
@@ -1128,9 +1135,9 @@ int main() {
 	allStudents = Util::loadAllStudent();
 	allUser = Util::loadAllUser();
 
-	nowUser.setAccount("111");
-	nowUser.setPassword("111");
-	nowUser.setRole(1);
+	//nowUser.setAccount("111");
+	//nowUser.setPassword("111");
+	//nowUser.setRole(1);
 	Panel::menu();
 
 	return 0;
